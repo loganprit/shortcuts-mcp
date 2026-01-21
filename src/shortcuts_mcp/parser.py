@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
 import plistlib
+from typing import Any
 
 from .models import ShortcutAction
 
@@ -11,7 +11,10 @@ def parse_actions(data: bytes) -> list[ShortcutAction]:
 
     The ZDATA column stores actions as a list directly (not wrapped in a dict).
     """
-    plist = plistlib.loads(data)
+    try:
+        plist = plistlib.loads(data)
+    except (ValueError, plistlib.InvalidFileException):
+        return []
 
     # Handle both formats: direct list or wrapped in dict
     if isinstance(plist, list):
@@ -38,7 +41,10 @@ def parse_input_types(data: bytes) -> list[str] | None:
 
     Note: Input types may not be present in the ZDATA blob format.
     """
-    plist = plistlib.loads(data)
+    try:
+        plist = plistlib.loads(data)
+    except (ValueError, plistlib.InvalidFileException):
+        return None
 
     if isinstance(plist, dict):
         input_types = plist.get("WFWorkflowInputContentItemClasses")
