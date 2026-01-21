@@ -16,6 +16,7 @@
 ## Coding Style & Naming Conventions
 - Python 3.10+ with type hints and async/await patterns.
 - PEP 8 formatting: 4-space indentation, snake_case for functions/variables, PascalCase for classes.
+- Avoid `Any` in type hints; prefer concrete types or `object` when needed.
 - Keep public tool functions small; delegate logic to `database.py`, `executor.py`, and `parser.py`.
 
 ## Testing Guidelines

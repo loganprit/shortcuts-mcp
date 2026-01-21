@@ -40,3 +40,13 @@ def test_action_types_unique():
 def test_parse_input_types():
     input_types = parse_input_types(_sample_plist())
     assert input_types == ["WFTextContentItem"]
+
+
+def test_parse_actions_invalid_plist():
+    actions = parse_actions(b"not a plist")
+    assert actions == []
+
+
+def test_parse_input_types_invalid_plist():
+    input_types = parse_input_types(b"not a plist")
+    assert input_types is None

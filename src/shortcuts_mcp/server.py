@@ -8,20 +8,24 @@ from mcp.server.fastmcp import FastMCP
 from .config import get_default_timeout
 from .database import (
     get_all_shortcuts,
-    get_folders as fetch_folders,
     get_shortcut_actions,
     get_shortcut_by_name,
     search_shortcuts_by_name,
 )
+from .database import (
+    get_folders as fetch_folders,
+)
 from .executor import run_via_applescript, run_via_url_scheme
-from .models import RunResult, ShortcutDetail, ShortcutMetadata, SearchIn
+from .models import RunResult, SearchIn, ShortcutDetail, ShortcutMetadata
 from .parser import action_search_blob, action_types, parse_actions, parse_input_types
 
 mcp = FastMCP(name="Shortcuts MCP")
 
 
 @mcp.tool()
-async def list_shortcuts(folder: str | None = None, include_actions: bool = False) -> dict:
+async def list_shortcuts(
+    folder: str | None = None, include_actions: bool = False
+) -> dict:
     """List all available macOS shortcuts."""
     rows = await get_all_shortcuts(folder=folder)
     shortcuts: list[dict[str, Any]] = []
@@ -87,18 +91,28 @@ async def run_shortcut(
 
     if wait_for_result:
         try:
-            output, elapsed_ms = await asyncio.wait_for(
+            output, elapsed_ms, returncode = await asyncio.wait_for(
                 run_via_applescript(name, input), timeout=timeout_value
             )
-            result = RunResult(success=True, output=output, execution_time_ms=elapsed_ms)
+            if returncode == 0:
+                result = RunResult(
+                    success=True, output=output, execution_time_ms=elapsed_ms
+                )
+            else:
+                result = RunResult(
+                    success=False, output=output, execution_time_ms=elapsed_ms
+                )
         except asyncio.TimeoutError:
             result = RunResult(success=False, output="Timeout waiting for shortcut")
         except Exception as exc:  # noqa: BLE001
             result = RunResult(success=False, output=str(exc))
         return result.model_dump()
 
-    await run_via_url_scheme(name, input)
-    return RunResult(success=True).model_dump()
+    try:
+        await run_via_url_scheme(name, input, timeout=timeout_value)
+        return RunResult(success=True).model_dump()
+    except Exception as exc:  # noqa: BLE001
+        return RunResult(success=False, output=str(exc)).model_dump()
 
 
 @mcp.tool()
