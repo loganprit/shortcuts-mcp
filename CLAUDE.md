@@ -24,11 +24,12 @@ Python MCP server for macOS Shortcuts with read-only database access and two exe
 - **server.py** - FastMCP tool definitions and entrypoint (`main()`). Tools: `list_shortcuts`, `get_shortcut`, `search_shortcuts`, `get_folders`, `run_shortcut`
 - **database.py** - Async SQLite queries via aiosqlite. Read-only connection to `~/Library/Shortcuts/Shortcuts.sqlite`. Handles Cocoa epoch timestamps and UUID normalization
 - **executor.py** - Two execution strategies:
-  - `run_via_applescript()` - Synchronous execution with output capture via osascript
-  - `run_via_url_scheme()` - Fire-and-forget via `shortcuts://` URL scheme
+  - `run_via_applescript()` - Synchronous execution with output capture and exit code via osascript
+  - `run_via_url_scheme()` - Asynchronous execution via `shortcuts://` URL scheme with optional timeout
 - **parser.py** - Parses binary plist blobs (shortcut action data) using `plistlib`. Extracts `WFWorkflowActions` and `WFWorkflowInputContentItemClasses`
 - **models.py** - Pydantic models for API responses (`ShortcutMetadata`, `ShortcutDetail`, `RunResult`, `ShortcutAction`)
 - **config.py** - Environment variable handling for `SHORTCUTS_DB_PATH`, `SHORTCUTS_DEFAULT_TIMEOUT`, `SHORTCUTS_LOG_LEVEL`
+- **types.py** - Type aliases for JSON data structures (`JsonPrimitive`, `JsonValue`). Used throughout the codebase to avoid `Any` types
 
 ### Data Flow
 
