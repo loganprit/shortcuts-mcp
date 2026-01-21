@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any
-import uuid
 
 import aiosqlite
 
@@ -29,7 +28,7 @@ def _connect() -> aiosqlite.Connection:
     return aiosqlite.connect(uri, uri=True)
 
 
-def _normalize_uuid(value: Any) -> str | None:
+def _normalize_uuid(value: str | bytes | int | None) -> str | None:
     if value is None:
         return None
     if isinstance(value, str):
@@ -44,7 +43,7 @@ def _normalize_uuid(value: Any) -> str | None:
     return str(value)
 
 
-def _convert_cocoa_date(value: Any) -> str | None:
+def _convert_cocoa_date(value: float | int | str | bytes | None) -> str | None:
     if value is None:
         return None
     try:
@@ -130,10 +129,11 @@ async def get_shortcut_actions(shortcut_pk: int) -> bytes | None:
     return row["data"]
 
 
-async def get_folders() -> list[dict[str, Any]]:
+async def get_folders() -> list[dict[str, str | int]]:
     """Get all collections/folders.
 
-    Note: macOS Shortcuts uses ZCOLLECTION for system categories (Root, ShareSheet, etc.)
+    Note: macOS Shortcuts uses ZCOLLECTION for system categories (Root, ShareSheet,
+    etc.)
     rather than user-defined folders. Returns collection identifiers or display names.
     """
     query = """

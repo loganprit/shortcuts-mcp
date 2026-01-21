@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
@@ -18,6 +17,7 @@ from .database import (
 from .executor import run_via_applescript, run_via_url_scheme
 from .models import RunResult, SearchIn, ShortcutDetail, ShortcutMetadata
 from .parser import action_search_blob, action_types, parse_actions, parse_input_types
+from .types import JsonValue
 
 mcp = FastMCP(name="Shortcuts MCP")
 
@@ -25,10 +25,10 @@ mcp = FastMCP(name="Shortcuts MCP")
 @mcp.tool()
 async def list_shortcuts(
     folder: str | None = None, include_actions: bool = False
-) -> dict:
+) -> dict[str, list[dict[str, object]]]:
     """List all available macOS shortcuts."""
     rows = await get_all_shortcuts(folder=folder)
-    shortcuts: list[dict[str, Any]] = []
+    shortcuts: list[dict[str, object]] = []
 
     for row in rows:
         action_types_list: list[str] | None = None
@@ -53,7 +53,7 @@ async def list_shortcuts(
 
 
 @mcp.tool()
-async def get_shortcut(name: str, include_actions: bool = True) -> dict:
+async def get_shortcut(name: str, include_actions: bool = True) -> dict[str, object]:
     """Get detailed information about a specific shortcut."""
     row = await get_shortcut_by_name(name)
     if not row:
@@ -82,10 +82,10 @@ async def get_shortcut(name: str, include_actions: bool = True) -> dict:
 @mcp.tool()
 async def run_shortcut(
     name: str,
-    input: Any | None = None,
+    input: JsonValue | None = None,
     wait_for_result: bool = True,
     timeout: int | None = None,
-) -> dict:
+) -> dict[str, object]:
     """Execute a shortcut with optional input."""
     timeout_value = timeout if timeout is not None else get_default_timeout()
 
@@ -116,7 +116,9 @@ async def run_shortcut(
 
 
 @mcp.tool()
-async def search_shortcuts(query: str, search_in: SearchIn = "name") -> dict:
+async def search_shortcuts(
+    query: str, search_in: SearchIn = "name"
+) -> dict[str, list[dict[str, object]]]:
     """Search shortcuts by name or action content."""
     matches: dict[str, ShortcutMetadata] = {}
 
@@ -152,7 +154,7 @@ async def search_shortcuts(query: str, search_in: SearchIn = "name") -> dict:
 
 
 @mcp.tool()
-async def get_folders() -> dict:
+async def get_folders() -> dict[str, list[dict[str, str | int]]]:
     """List shortcut folders/collections."""
     folders = await fetch_folders()
     return {"folders": folders}

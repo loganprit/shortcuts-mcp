@@ -12,6 +12,7 @@
 ## Build, Test, and Development Commands
 - `uv run shortcuts-mcp`: run the MCP server locally.
 - `uv run pytest`: execute the test suite.
+- `scripts/ci.sh`: run after code changes to ensure tests, lint, and typing pass.
 
 ## Coding Style & Naming Conventions
 - Python 3.10+ with type hints and async/await patterns.

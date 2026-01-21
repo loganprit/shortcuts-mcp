@@ -4,11 +4,12 @@ import asyncio
 import json
 import subprocess
 import time
-from typing import Any
 from urllib.parse import quote
 
+from .types import JsonValue
 
-def _stringify_input(value: Any) -> str:
+
+def _stringify_input(value: JsonValue) -> str:
     if value is None:
         return ""
     if isinstance(value, str):
@@ -31,7 +32,7 @@ def _open_url(url: str, timeout: int | None) -> subprocess.CompletedProcess[str]
 
 
 async def run_via_applescript(
-    name: str, input_value: Any | None = None
+    name: str, input_value: JsonValue | None = None
 ) -> tuple[str, int, int]:
     start = time.perf_counter()
     name_literal = _applescript_literal(name)
@@ -65,7 +66,7 @@ async def run_via_applescript(
 
 
 async def run_via_url_scheme(
-    name: str, input_value: Any | None = None, timeout: int | None = None
+    name: str, input_value: JsonValue | None = None, timeout: int | None = None
 ) -> None:
     url = f"shortcuts://run-shortcut?name={quote(name)}"
     if input_value is not None:
