@@ -31,7 +31,7 @@ SHORTCUTS_LOG_LEVEL="INFO"
   "mcpServers": {
     "shortcuts": {
       "command": "uv",
-      "args": ["--directory", "/Users/logan/MCPs/shortcuts-mcp", "run", "shortcuts-mcp"]
+      "args": ["--directory", "/path/to/shortcuts-mcp", "run", "shortcuts-mcp"]
     }
   }
 }
