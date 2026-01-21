@@ -8,6 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 uv run shortcuts-mcp          # Run the MCP server locally
 uv run pytest                 # Run all tests
 uv run pytest tests/test_parser.py -k test_parse_actions  # Run a single test
+uv run basedpyright           # Type checking (strict mode)
+uv run ruff check             # Lint code
+uv run ruff format            # Format code
+uv run ruff format --check    # Check formatting without modifying
+scripts/ci.sh                 # Run full CI suite locally
 ```
 
 ## Architecture
@@ -43,3 +48,6 @@ SHORTCUTS_LOG_LEVEL="INFO"
 - Cocoa epoch (2001-01-01) used for timestamp conversion in database.py
 - Shortcut UUIDs may be stored as 16-byte blobs or strings; `_normalize_uuid()` handles both
 - Action data stored as binary plist in `ZSHORTCUTACTIONS.ZDATA` column
+- Plist parsing handles two formats: direct list of actions OR dict-wrapped with `WFWorkflowActions` key
+- Type checking is strict mode (`basedpyright` with `typeCheckingMode = "strict"`)
+- Python 3.10+ required for type alias syntax and modern typing features
