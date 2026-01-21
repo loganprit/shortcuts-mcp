@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
 
 class ShortcutAction(BaseModel):
     identifier: str
-    parameters: dict[str, Any] = Field(default_factory=dict)
+    parameters: dict[str, object] = Field(default_factory=dict)
 
 
 class ShortcutMetadata(BaseModel):

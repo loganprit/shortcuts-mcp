@@ -7,6 +7,7 @@ src/shortcuts_mcp/executor.py
 src/shortcuts_mcp/models.py
 src/shortcuts_mcp/parser.py
 src/shortcuts_mcp/server.py
+src/shortcuts_mcp/types.py
 src/shortcuts_mcp.egg-info/PKG-INFO
 src/shortcuts_mcp.egg-info/SOURCES.txt
 src/shortcuts_mcp.egg-info/dependency_links.txt
