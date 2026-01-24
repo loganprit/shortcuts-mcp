@@ -82,17 +82,24 @@ async def get_shortcut(name: str, include_actions: bool = True) -> dict[str, obj
 @mcp.tool()
 async def run_shortcut(
     name: str,
-    input: JsonValue | None = None,
+    input: object = None,
     wait_for_result: bool = True,
     timeout: int | None = None,
 ) -> dict[str, object]:
-    """Execute a shortcut with optional input."""
+    """Execute a shortcut with optional input.
+
+    The input parameter accepts any JSON-serializable value (str, int, float,
+    bool, None, list, or dict). We use 'object' here because Pydantic's schema
+    generation cannot handle the recursive JsonValue TypeAlias.
+    """
     timeout_value = timeout if timeout is not None else get_default_timeout()
+    # Cast to JsonValue for the executor functions
+    input_value: JsonValue = input  # type: ignore[assignment]
 
     if wait_for_result:
         try:
             output, elapsed_ms, returncode = await asyncio.wait_for(
-                run_via_applescript(name, input), timeout=timeout_value
+                run_via_applescript(name, input_value), timeout=timeout_value
             )
             if returncode == 0:
                 result = RunResult(
@@ -109,7 +116,7 @@ async def run_shortcut(
         return result.model_dump()
 
     try:
-        await run_via_url_scheme(name, input, timeout=timeout_value)
+        await run_via_url_scheme(name, input_value, timeout=timeout_value)
         return RunResult(success=True).model_dump()
     except Exception as exc:  # noqa: BLE001
         return RunResult(success=False, output=str(exc)).model_dump()
