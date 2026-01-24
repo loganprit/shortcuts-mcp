@@ -61,8 +61,10 @@ def build_workflow_payload(
         payload["WFWorkflowInputContentItemClasses"] = list(input_types)
     if client_release:
         payload["WFWorkflowClientRelease"] = client_release
+        payload["WFWorkflowMinimumClientVersionString"] = client_release
     if client_version is not None:
         payload["WFWorkflowClientVersion"] = client_version
+        payload["WFWorkflowMinimumClientVersion"] = client_version
     return payload
 
 
