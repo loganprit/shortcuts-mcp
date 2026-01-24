@@ -15,7 +15,7 @@ def test_build_workflow_plist_roundtrip():
         "Sample",
         actions,
         client_release="7.0",
-        client_version=4046,
+        client_version="4046.0.2.2",
     )
     parsed = parse_actions(payload)
 
@@ -36,7 +36,7 @@ def test_build_workflow_plist_drops_none_values():
         "Sample",
         actions,
         client_release="7.0",
-        client_version=4046,
+        client_version="4046.0.2.2",
     )
     parsed = parse_actions(payload)
 

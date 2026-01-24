@@ -9,13 +9,13 @@ from .models import ShortcutAction
 
 SHORTCUTS_INFO_PLIST = Path("/System/Applications/Shortcuts.app/Contents/Info.plist")
 
-_client_info: tuple[str | None, int | None] | None = None
+_client_info: tuple[str | None, str | None] | None = None
 _DROP = object()
 
 
 def get_shortcuts_client_info(
     info_plist_path: Path = SHORTCUTS_INFO_PLIST,
-) -> tuple[str | None, int | None]:
+) -> tuple[str | None, str | None]:
     global _client_info
     if info_plist_path == SHORTCUTS_INFO_PLIST and _client_info is not None:
         return _client_info
@@ -44,7 +44,7 @@ def build_workflow_payload(
     actions: Iterable[ShortcutAction],
     input_types: list[str] | None = None,
     client_release: str | None = None,
-    client_version: int | None = None,
+    client_version: str | None = None,
 ) -> dict[str, object]:
     if client_release is None or client_version is None:
         detected_release, detected_version = get_shortcuts_client_info()
@@ -71,7 +71,7 @@ def build_workflow_plist(
     actions: Iterable[ShortcutAction],
     input_types: list[str] | None = None,
     client_release: str | None = None,
-    client_version: int | None = None,
+    client_version: str | None = None,
 ) -> bytes:
     payload = build_workflow_payload(
         name,
@@ -98,15 +98,12 @@ def build_workflow_actions(
     return built
 
 
-def _parse_bundle_version(value: object) -> int | None:
+def _parse_bundle_version(value: object) -> str | None:
     if isinstance(value, int):
-        return value
+        return str(value)
     if not isinstance(value, str) or not value:
         return None
-    head = value.split(".")[0]
-    if not head.isdigit():
-        return None
-    return int(head)
+    return value
 
 
 def _coerce_plist_mapping(value: dict[str, object]) -> dict[str, object]:
