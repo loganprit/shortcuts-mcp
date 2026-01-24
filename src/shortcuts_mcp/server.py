@@ -4,6 +4,7 @@ import asyncio
 
 from mcp.server.fastmcp import FastMCP
 
+from .actions import catalog as action_catalog
 from .config import get_default_timeout
 from .database import (
     get_all_shortcuts,
@@ -11,11 +12,8 @@ from .database import (
     get_shortcut_by_name,
     search_shortcuts_by_name,
 )
-from .database import (
-    get_folders as fetch_folders,
-)
+from .database import get_folders as fetch_folders
 from .executor import run_via_applescript, run_via_url_scheme
-from .actions import catalog as action_catalog
 from .models import (
     ActionInfo,
     ActionSource,
@@ -182,10 +180,12 @@ async def get_available_actions(
     Args:
         source: Filter by source - "system" (Apple frameworks), "apps" (third-party),
             "library" (from user's shortcuts), "curated" (classic is.workflow.actions.*)
-        category: Filter by action category/prefix (e.g., "is.workflow.actions", "com.apple")
+        category: Filter by action category/prefix
+            (e.g., "is.workflow.actions", "com.apple")
         search: Search query to filter by identifier, title, or description
         include_parameters: Include parameter definitions (default: True)
-        include_examples: Include example parameters from user's library (default: False)
+        include_examples: Include example parameters from user's library
+            (default: False)
         force_refresh: Bypass cache and rescan all sources (default: False)
 
     Returns:
