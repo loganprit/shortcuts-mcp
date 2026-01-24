@@ -354,8 +354,9 @@ async def _validate_actions(actions: list[ShortcutAction]) -> list[str]:
         allowed = {param.name for param in info.parameters}
         unknown = sorted(key for key in action.parameters.keys() if key not in allowed)
         if unknown:
+            keys = ", ".join(unknown)
             warnings.append(
-                f"Action {action.identifier} has unknown parameter keys: {', '.join(unknown)}"
+                f"Action {action.identifier} has unknown parameter keys: {keys}"
             )
     return warnings
 

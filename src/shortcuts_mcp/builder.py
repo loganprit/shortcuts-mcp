@@ -3,22 +3,22 @@ from __future__ import annotations
 import plistlib
 from datetime import date, datetime
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, cast
 
 from .models import ShortcutAction
 
 SHORTCUTS_INFO_PLIST = Path("/System/Applications/Shortcuts.app/Contents/Info.plist")
 
-_CLIENT_INFO: tuple[str | None, int | None] | None = None
+_client_info: tuple[str | None, int | None] | None = None
 _DROP = object()
 
 
 def get_shortcuts_client_info(
     info_plist_path: Path = SHORTCUTS_INFO_PLIST,
 ) -> tuple[str | None, int | None]:
-    global _CLIENT_INFO
-    if info_plist_path == SHORTCUTS_INFO_PLIST and _CLIENT_INFO is not None:
-        return _CLIENT_INFO
+    global _client_info
+    if info_plist_path == SHORTCUTS_INFO_PLIST and _client_info is not None:
+        return _client_info
 
     if not info_plist_path.exists():
         return None, None
@@ -34,7 +34,7 @@ def get_shortcuts_client_info(
     client_version = _parse_bundle_version(payload.get("CFBundleVersion"))
 
     if info_plist_path == SHORTCUTS_INFO_PLIST:
-        _CLIENT_INFO = (client_release, client_version)
+        _client_info = (client_release, client_version)
 
     return client_release, client_version
 
@@ -128,7 +128,7 @@ def _coerce_plist_value(value: object) -> object:
         return value
     if isinstance(value, list):
         items: list[object] = []
-        for item in value:
+        for item in cast(list[object], value):
             coerced = _coerce_plist_value(item)
             if coerced is _DROP:
                 continue
@@ -136,7 +136,7 @@ def _coerce_plist_value(value: object) -> object:
         return items
     if isinstance(value, dict):
         output: dict[str, object] = {}
-        for key, item in value.items():
+        for key, item in cast(dict[object, object], value).items():
             coerced = _coerce_plist_value(item)
             if coerced is _DROP:
                 continue
