@@ -14,6 +14,7 @@ uv run shortcuts-mcp
 - `get_shortcut(name, include_actions?)`
 - `search_shortcuts(query, search_in?)`
 - `get_folders()`
+- `get_available_actions(source?, category?, search?, include_parameters?, include_examples?, force_refresh?)`
 - `run_shortcut(name, input?, wait_for_result?, timeout?)`
 
 ## Environment Variables
