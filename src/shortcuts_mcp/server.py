@@ -15,7 +15,15 @@ from .database import (
     get_folders as fetch_folders,
 )
 from .executor import run_via_applescript, run_via_url_scheme
-from .models import RunResult, SearchIn, ShortcutDetail, ShortcutMetadata
+from .actions import catalog as action_catalog
+from .models import (
+    ActionInfo,
+    ActionSource,
+    RunResult,
+    SearchIn,
+    ShortcutDetail,
+    ShortcutMetadata,
+)
 from .parser import action_search_blob, action_types, parse_actions, parse_input_types
 from .types import JsonValue
 
@@ -158,6 +166,62 @@ async def search_shortcuts(
                 )
 
     return {"shortcuts": [item.model_dump() for item in matches.values()]}
+
+
+@mcp.tool()
+async def get_available_actions(
+    source: ActionSource | None = None,
+    category: str | None = None,
+    search: str | None = None,
+    include_parameters: bool = True,
+    include_examples: bool = False,
+    force_refresh: bool = False,
+) -> dict[str, object]:
+    """Get all available Shortcuts actions from system and installed apps.
+
+    Args:
+        source: Filter by source - "system" (Apple frameworks), "apps" (third-party),
+            "library" (from user's shortcuts), "curated" (classic is.workflow.actions.*)
+        category: Filter by action category/prefix (e.g., "is.workflow.actions", "com.apple")
+        search: Search query to filter by identifier, title, or description
+        include_parameters: Include parameter definitions (default: True)
+        include_examples: Include example parameters from user's library (default: False)
+        force_refresh: Bypass cache and rescan all sources (default: False)
+
+    Returns:
+        Dictionary with:
+        - actions: List of ActionInfo objects
+        - categories: List of unique category prefixes found
+        - sources: Count of actions per source
+        - cached: Whether results came from cache
+    """
+    actions, cached = await action_catalog.get_all_actions(
+        source=source,
+        category=category,
+        search=search,
+        force_refresh=force_refresh,
+    )
+
+    trimmed: list[ActionInfo] = []
+    for action in actions:
+        item = action.model_copy(deep=True)
+        if not include_parameters:
+            item.parameters = []
+        if not include_examples:
+            item.example_params = None
+        trimmed.append(item)
+
+    categories = sorted({item.category for item in trimmed})
+    sources: dict[str, int] = {"system": 0, "apps": 0, "library": 0, "curated": 0}
+    for item in trimmed:
+        sources[item.source] = sources.get(item.source, 0) + 1
+
+    return {
+        "actions": [item.model_dump() for item in trimmed],
+        "categories": categories,
+        "sources": sources,
+        "cached": cached,
+    }
 
 
 @mcp.tool()

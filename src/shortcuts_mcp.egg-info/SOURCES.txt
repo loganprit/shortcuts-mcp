@@ -1,6 +1,7 @@
 README.md
 pyproject.toml
 src/shortcuts_mcp/__init__.py
+src/shortcuts_mcp/actions.py
 src/shortcuts_mcp/config.py
 src/shortcuts_mcp/database.py
 src/shortcuts_mcp/executor.py
@@ -14,4 +15,5 @@ src/shortcuts_mcp.egg-info/dependency_links.txt
 src/shortcuts_mcp.egg-info/entry_points.txt
 src/shortcuts_mcp.egg-info/requires.txt
 src/shortcuts_mcp.egg-info/top_level.txt
+tests/test_actions.py
 tests/test_parser.py
