@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import tempfile
+from pathlib import Path
+from typing import Literal
 
 from mcp.server.fastmcp import FastMCP
 
 from .actions import catalog as action_catalog
+from .builder import build_workflow_plist
 from .config import get_default_timeout
 from .database import (
     get_all_shortcuts,
@@ -13,12 +17,18 @@ from .database import (
     search_shortcuts_by_name,
 )
 from .database import get_folders as fetch_folders
-from .executor import run_via_applescript, run_via_url_scheme
+from .executor import (
+    open_file,
+    run_via_applescript,
+    run_via_url_scheme,
+    sign_shortcut_file,
+)
 from .models import (
     ActionInfo,
     ActionSource,
     RunResult,
     SearchIn,
+    ShortcutAction,
     ShortcutDetail,
     ShortcutMetadata,
 )
@@ -225,6 +235,65 @@ async def get_available_actions(
 
 
 @mcp.tool()
+async def create_shortcut(
+    name: str,
+    actions: list[ShortcutAction],
+    input_types: list[str] | None = None,
+    validate: bool = True,
+    install: bool = True,
+    sign_mode: Literal["anyone", "people-who-know-me"] = "anyone",
+    if_exists: Literal["error", "rename"] = "error",
+    wait_for_import: bool = True,
+    wait_timeout_s: int = 10,
+) -> dict[str, object]:
+    """Create and import a new shortcut from provided actions."""
+    warnings: list[str] = []
+    resolved_name = await _resolve_shortcut_name(name, if_exists=if_exists)
+    if resolved_name != name:
+        warnings.append(
+            f"Shortcut '{name}' already exists. Using '{resolved_name}' instead."
+        )
+
+    if validate:
+        warnings.extend(await _validate_actions(actions))
+
+    temp_dir = Path(tempfile.mkdtemp(prefix="shortcuts-mcp-"))
+    filename = _safe_shortcut_filename(resolved_name)
+    unsigned_path = temp_dir / f"{filename}.shortcut"
+    signed_path = temp_dir / f"{filename} signed.shortcut"
+
+    payload = build_workflow_plist(
+        resolved_name,
+        actions,
+        input_types=input_types,
+    )
+    unsigned_path.write_bytes(payload)
+    await sign_shortcut_file(str(unsigned_path), str(signed_path), sign_mode)
+
+    import_confirmed: bool | None = None
+    if install:
+        await open_file(str(signed_path))
+        if wait_for_import:
+            import_confirmed = await _wait_for_shortcut_import(
+                resolved_name, timeout_s=wait_timeout_s
+            )
+            if not import_confirmed:
+                warnings.append(
+                    "Import not confirmed yet. Shortcuts may still be prompting."
+                )
+
+    return {
+        "success": True,
+        "name": resolved_name,
+        "unsigned_path": str(unsigned_path),
+        "signed_path": str(signed_path),
+        "import_attempted": install,
+        "import_confirmed": import_confirmed,
+        "warnings": warnings,
+    }
+
+
+@mcp.tool()
 async def get_folders() -> dict[str, list[dict[str, str | int]]]:
     """List shortcut folders/collections."""
     folders = await fetch_folders()
@@ -233,6 +302,62 @@ async def get_folders() -> dict[str, list[dict[str, str | int]]]:
 
 def main() -> None:
     mcp.run()
+
+
+async def _resolve_shortcut_name(name: str, if_exists: str) -> str:
+    existing = await get_shortcut_by_name(name)
+    if not existing:
+        return name
+    if if_exists == "error":
+        raise ValueError(f"Shortcut already exists: {name}")
+
+    suffix = 2
+    while True:
+        candidate = f"{name} ({suffix})"
+        if await get_shortcut_by_name(candidate) is None:
+            return candidate
+        suffix += 1
+
+
+async def _wait_for_shortcut_import(name: str, timeout_s: int) -> bool:
+    if timeout_s <= 0:
+        return False
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout_s
+    while loop.time() < deadline:
+        if await get_shortcut_by_name(name):
+            return True
+        await asyncio.sleep(0.5)
+    return False
+
+
+def _safe_shortcut_filename(name: str) -> str:
+    cleaned = name.replace("/", "_").replace(":", "_").strip()
+    return cleaned or "shortcut"
+
+
+async def _validate_actions(actions: list[ShortcutAction]) -> list[str]:
+    warnings: list[str] = []
+    action_list, _cached = await action_catalog.get_all_actions()
+    action_map = {action.identifier: action for action in action_list}
+
+    if not action_map:
+        warnings.append("Action catalog empty; skipping validation.")
+        return warnings
+
+    for action in actions:
+        info = action_map.get(action.identifier)
+        if info is None:
+            raise ValueError(f"Unknown action identifier: {action.identifier}")
+        if not info.parameters:
+            continue
+        allowed = {param.name for param in info.parameters}
+        unknown = sorted(key for key in action.parameters.keys() if key not in allowed)
+        if unknown:
+            warnings.append(
+                f"Action {action.identifier} has unknown parameter keys: {', '.join(unknown)}"
+            )
+    return warnings
 
 
 if __name__ == "__main__":

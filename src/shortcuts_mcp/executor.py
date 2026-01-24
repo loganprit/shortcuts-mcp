@@ -21,14 +21,20 @@ def _applescript_literal(value: str) -> str:
     return json.dumps(value)
 
 
-def _open_url(url: str, timeout: int | None) -> subprocess.CompletedProcess[str]:
+def _run_command(
+    args: list[str], timeout: int | None
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["open", url],
+        args,
         capture_output=True,
         text=True,
         timeout=timeout,
         check=False,
     )
+
+
+def _open_url(url: str, timeout: int | None) -> subprocess.CompletedProcess[str]:
+    return _run_command(["open", url], timeout)
 
 
 async def run_via_applescript(
@@ -74,6 +80,40 @@ async def run_via_url_scheme(
 
     loop = asyncio.get_running_loop()
     completed = await loop.run_in_executor(None, _open_url, url, timeout)
+    if completed.returncode != 0:
+        stderr = (completed.stderr or "").strip()
+        stdout = (completed.stdout or "").strip()
+        message = stderr or stdout or f"open returned {completed.returncode}"
+        raise RuntimeError(message)
+
+
+async def sign_shortcut_file(
+    input_path: str, output_path: str, mode: str, timeout: int | None = None
+) -> str:
+    loop = asyncio.get_running_loop()
+    args = [
+        "shortcuts",
+        "sign",
+        "--mode",
+        mode,
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+    ]
+    completed = await loop.run_in_executor(None, _run_command, args, timeout)
+    stdout = (completed.stdout or "").strip()
+    stderr = (completed.stderr or "").strip()
+    output = "\n".join(part for part in [stdout, stderr] if part)
+    if completed.returncode != 0:
+        message = output or f"shortcuts sign returned {completed.returncode}"
+        raise RuntimeError(message)
+    return output
+
+
+async def open_file(path: str, timeout: int | None = None) -> None:
+    loop = asyncio.get_running_loop()
+    completed = await loop.run_in_executor(None, _run_command, ["open", path], timeout)
     if completed.returncode != 0:
         stderr = (completed.stderr or "").strip()
         stdout = (completed.stdout or "").strip()
