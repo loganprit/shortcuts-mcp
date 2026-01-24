@@ -1,5 +1,4 @@
 {
-  "$schema": "./curated_actions.schema.json",
   "$version": "1.0.0",
   "$description": "Curated list of classic is.workflow.actions.* identifiers with metadata",
   "actions": {
