@@ -41,3 +41,25 @@ class RunResult(BaseModel):
 
 
 SearchIn = Literal["name", "actions", "both"]
+
+ActionSource = Literal["system", "apps", "library", "curated"]
+
+
+class ActionParameter(BaseModel):
+    name: str
+    title: str | None = None
+    value_type: str
+    is_optional: bool = False
+    description: str | None = None
+
+
+class ActionInfo(BaseModel):
+    identifier: str
+    source: ActionSource
+    title: str | None = None
+    description: str | None = None
+    category: str
+    parameters: list[ActionParameter] = Field(default_factory=list)
+    platform_availability: dict[str, str] | None = None
+    usage_count: int = 0
+    example_params: dict[str, object] | None = None
