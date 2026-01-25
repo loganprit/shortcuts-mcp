@@ -20,7 +20,7 @@ bun run format:check
 # The server will hang waiting for stdio input, so we timeout after 2 seconds.
 # If there are any errors, they appear on stderr.
 echo "Testing MCP server startup..."
-if stderr=$(timeout 2 bun run src/ts/index.ts 2>&1 >/dev/null) || [ $? -eq 124 ]; then
+if stderr=$(timeout 2 bun run src/index.ts 2>&1 >/dev/null) || [ $? -eq 124 ]; then
     # Exit code 124 means timeout (expected - server started successfully)
     # Any other success means unexpected early exit
     if [ -n "$stderr" ]; then

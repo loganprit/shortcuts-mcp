@@ -10,7 +10,7 @@ import {
   getShortcutActions,
   getShortcutByName,
   searchShortcutsByName,
-} from "../../src/ts/database.js";
+} from "../src/database.js";
 
 const withEnv = async <T>(
   key: string,

@@ -5,9 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-bun run src/ts/index.ts       # Run the MCP server locally
+bun run src/index.ts          # Run the MCP server locally
 bun test                      # Run all tests
-bun test tests/ts/parser.test.ts  # Run a single test file
+bun test tests/parser.test.ts # Run a single test file
 bun run typecheck             # Type checking (tsc strict mode)
 bun run lint                  # Lint code (Biome)
 bun run format                # Format code (Biome)

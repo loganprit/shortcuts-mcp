@@ -1,6 +1,6 @@
 # Implementation Plan - shortcuts-mcp
 
-STATUS: IN_PROGRESS
+STATUS: COMPLETE
 
 ## Overview
 
@@ -41,7 +41,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 - [x] Task 4.3 - Update README for Bun stdio server
 - [x] Task 4.4 - Update scripts/ci.sh for Bun lint/typecheck/test
 - [x] Task 4.5 - Remove Python implementation after parity verification
-- [ ] Task 4.6 - Move /ts to /src and finalize project structure
+- [x] Task 4.6 - Move /ts to /src and finalize project structure
 
 ## Completed Tasks
 
@@ -64,11 +64,11 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 4.3 | 15 | Updated README for Bun stdio server with setup, tools, and integration docs |
 | Task 4.4 | 16 | Updated scripts/ci.sh to use Bun commands (test, typecheck, lint, format:check, server startup) |
 | Task 4.5 | 17 | Removed Python implementation (src/shortcuts_mcp, pyproject.toml, uv.lock, Python tests) and updated CLAUDE.md + btca.config.jsonc |
+| Task 4.6 | 18 | Moved src/ts/* to src/ and tests/ts/* to tests/, updated all import paths, CI script, and CLAUDE.md |
 
 ## Current Focus
 
-**Next Task:** Task 4.6
-**Blockers:** None
+**Migration Complete!** All tasks finished.
 
 ## Bugs
 

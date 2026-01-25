@@ -5,9 +5,9 @@ import {
   mergeAction,
   parseActionsdataPayload,
   parseCuratedPayload,
-} from "../../src/ts/actions.js";
+} from "../src/actions.js";
 
-import type { ActionInfo } from "../../src/ts/types.js";
+import type { ActionInfo } from "../src/types.js";
 
 describe("actions internal helpers", () => {
   it("extracts localized text from strings or objects", () => {
@@ -179,7 +179,7 @@ describe("actions catalog parsing", () => {
   });
 
   it("filters actions in the catalog", async () => {
-    const { ActionCatalog } = await import("../../src/ts/actions.js");
+    const { ActionCatalog } = await import("../src/actions.js");
     const catalog = new ActionCatalog();
 
     // Mock internal state to avoid filesystem/DB access

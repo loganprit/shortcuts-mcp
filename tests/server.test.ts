@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { createServer, startServer } from "../../src/ts/index.js";
+import { createServer, startServer } from "../src/index.js";
 
 describe("typescript server scaffold", () => {
   it("creates an MCP server instance", () => {

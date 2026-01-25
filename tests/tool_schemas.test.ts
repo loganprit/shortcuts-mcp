@@ -1,13 +1,13 @@
 import { describe, expect, it } from "bun:test";
 import { z } from "zod";
 
-import { INPUT_SCHEMA as GET_AVAILABLE_ACTIONS_INPUT_SCHEMA } from "../../src/ts/tools/get_available_actions.js";
-import { INPUT_SCHEMA as GET_FOLDERS_INPUT_SCHEMA } from "../../src/ts/tools/get_folders.js";
-import { INPUT_SCHEMA as GET_SHORTCUT_INPUT_SCHEMA } from "../../src/ts/tools/get_shortcut.js";
-import { INPUT_SCHEMA as LIST_SHORTCUTS_INPUT_SCHEMA } from "../../src/ts/tools/list_shortcuts.js";
-import { INPUT_SCHEMA as RUN_SHORTCUT_INPUT_SCHEMA } from "../../src/ts/tools/run_shortcut.js";
-import { jsonValueSchema } from "../../src/ts/tools/schemas.js";
-import { INPUT_SCHEMA as SEARCH_SHORTCUTS_INPUT_SCHEMA } from "../../src/ts/tools/search_shortcuts.js";
+import { INPUT_SCHEMA as GET_AVAILABLE_ACTIONS_INPUT_SCHEMA } from "../src/tools/get_available_actions.js";
+import { INPUT_SCHEMA as GET_FOLDERS_INPUT_SCHEMA } from "../src/tools/get_folders.js";
+import { INPUT_SCHEMA as GET_SHORTCUT_INPUT_SCHEMA } from "../src/tools/get_shortcut.js";
+import { INPUT_SCHEMA as LIST_SHORTCUTS_INPUT_SCHEMA } from "../src/tools/list_shortcuts.js";
+import { INPUT_SCHEMA as RUN_SHORTCUT_INPUT_SCHEMA } from "../src/tools/run_shortcut.js";
+import { jsonValueSchema } from "../src/tools/schemas.js";
+import { INPUT_SCHEMA as SEARCH_SHORTCUTS_INPUT_SCHEMA } from "../src/tools/search_shortcuts.js";
 
 const toSchema = (shape: z.ZodRawShape) => z.object(shape);
 

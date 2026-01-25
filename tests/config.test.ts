@@ -9,7 +9,7 @@ import {
   getDbPath,
   getDefaultTimeoutSeconds,
   getLogLevel,
-} from "../../src/ts/config.js";
+} from "../src/config.js";
 
 const withEnv = <T>(key: string, value: string | undefined, fn: () => T): T => {
   const previous = process.env[key];

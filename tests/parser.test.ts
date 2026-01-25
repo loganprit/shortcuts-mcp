@@ -1,12 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { build } from "plist";
 
-import {
-  actionSearchBlob,
-  actionTypes,
-  parseActions,
-  parseInputTypes,
-} from "../../src/ts/parser.js";
+import { actionSearchBlob, actionTypes, parseActions, parseInputTypes } from "../src/parser.js";
 
 const samplePlist = (): Uint8Array => {
   const data = {

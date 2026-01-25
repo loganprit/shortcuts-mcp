@@ -8,8 +8,8 @@ import {
   runViaApplescript,
   runViaUrlScheme,
   stringifyInput,
-} from "../../src/ts/executor.js";
-import type { JsonValue } from "../../src/ts/types.js";
+} from "../src/executor.js";
+import type { JsonValue } from "../src/types.js";
 
 describe("executor helpers", () => {
   it("stringifies input values", () => {
