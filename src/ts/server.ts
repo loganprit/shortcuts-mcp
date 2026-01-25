@@ -3,30 +3,53 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 
 import {
   getAvailableActions,
+  INPUT_SCHEMA as GET_AVAILABLE_ACTIONS_INPUT_SCHEMA,
+  TOOL_NAME as GET_AVAILABLE_ACTIONS_NAME,
+} from "./tools/get_available_actions.js";
+import {
   getFolders,
+  INPUT_SCHEMA as GET_FOLDERS_INPUT_SCHEMA,
+  TOOL_NAME as GET_FOLDERS_NAME,
+} from "./tools/get_folders.js";
+import {
   getShortcut,
+  INPUT_SCHEMA as GET_SHORTCUT_INPUT_SCHEMA,
+  TOOL_NAME as GET_SHORTCUT_NAME,
+} from "./tools/get_shortcut.js";
+import {
+  INPUT_SCHEMA as LIST_SHORTCUTS_INPUT_SCHEMA,
   listShortcuts,
+  TOOL_NAME as LIST_SHORTCUTS_NAME,
+} from "./tools/list_shortcuts.js";
+import {
+  INPUT_SCHEMA as RUN_SHORTCUT_INPUT_SCHEMA,
   runShortcut,
+  TOOL_NAME as RUN_SHORTCUT_NAME,
+} from "./tools/run_shortcut.js";
+import {
+  INPUT_SCHEMA as SEARCH_SHORTCUTS_INPUT_SCHEMA,
   searchShortcuts,
-} from "./tools/index.js";
-
-export type ToolHandler = () => Promise<unknown>;
-
-const TOOL_HANDLERS: Record<string, ToolHandler> = {
-  list_shortcuts: listShortcuts,
-  get_shortcut: getShortcut,
-  search_shortcuts: searchShortcuts,
-  get_folders: getFolders,
-  get_available_actions: getAvailableActions,
-  run_shortcut: runShortcut,
-};
+  TOOL_NAME as SEARCH_SHORTCUTS_NAME,
+} from "./tools/search_shortcuts.js";
 
 const SERVER_NAME = "Shortcuts MCP";
 const SERVER_VERSION = "0.0.0";
 
 export const createServer = (): McpServer => {
-  void TOOL_HANDLERS;
-  return new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
+  const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
+
+  server.tool(LIST_SHORTCUTS_NAME, LIST_SHORTCUTS_INPUT_SCHEMA, listShortcuts);
+  server.tool(GET_SHORTCUT_NAME, GET_SHORTCUT_INPUT_SCHEMA, getShortcut);
+  server.tool(SEARCH_SHORTCUTS_NAME, SEARCH_SHORTCUTS_INPUT_SCHEMA, searchShortcuts);
+  server.tool(GET_FOLDERS_NAME, GET_FOLDERS_INPUT_SCHEMA, getFolders);
+  server.tool(
+    GET_AVAILABLE_ACTIONS_NAME,
+    GET_AVAILABLE_ACTIONS_INPUT_SCHEMA,
+    getAvailableActions,
+  );
+  server.tool(RUN_SHORTCUT_NAME, RUN_SHORTCUT_INPUT_SCHEMA, runShortcut);
+
+  return server;
 };
 
 export const startServer = async (): Promise<McpServer> => {
