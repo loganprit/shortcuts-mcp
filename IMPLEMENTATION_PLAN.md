@@ -24,7 +24,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 
 - [x] Task 2.1 - Port config/env handling to TypeScript
 - [x] Task 2.2 - Port database read access and queries to TypeScript
-- [ ] Task 2.3 - Port plist parsing + action extraction to TypeScript
+- [x] Task 2.3 - Port plist parsing + action extraction to TypeScript
 - [ ] Task 2.4 - Port action catalog discovery to TypeScript
 - [ ] Task 2.5 - Port execution helpers for run_shortcut parity
 
@@ -41,6 +41,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 - [ ] Task 4.3 - Update README + Claude Code config for Bun stdio server
 - [ ] Task 4.4 - Update scripts/ci.sh for Bun lint/typecheck/test
 - [ ] Task 4.5 - Remove Python implementation after parity verification
+- [ ] Task 4.6 - Move /ts to /src and finalize project structure
 
 ## Completed Tasks
 
@@ -52,10 +53,11 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 1.3 | 4 | Added Biome linting, TS typecheck scripts, and Bun test scaffold |
 | Task 2.1 | 5 | Ported config/env handling with Bun tests |
 | Task 2.2 | 6 | Added Bun sqlite database access layer + tests |
+| Task 2.3 | 7 | Ported plist parsing + action extraction with Bun tests |
 
 ## Current Focus
 
-**Next Task:** Task 2.3
+**Next Task:** Task 2.4
 **Blockers:** None
 
 ## Bugs
