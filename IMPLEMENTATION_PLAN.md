@@ -36,7 +36,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 
 ### Phase 4: Tests, Docs, Cleanup
 
-- [ ] Task 4.1 - Replace pytest coverage with Bun tests for parser/actions
+- [x] Task 4.1 - Replace pytest coverage with Bun tests for parser/actions
 - [ ] Task 4.2 - Add parity validation checklist/runbook for local stdio checks
 - [ ] Task 4.3 - Update README + Claude Code config for Bun stdio server
 - [ ] Task 4.4 - Update scripts/ci.sh for Bun lint/typecheck/test
@@ -59,6 +59,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 3.1 | 10 | Added MCP server bootstrap with stdio transport |
 | Task 3.2 | 11 | Registered MCP tools with Zod input schemas |
 | Task 3.3 | 12 | Implemented tool logic and mapped responses to Python shapes |
+| Task 4.1 | 13 | Ported parser and actions tests to Bun with high coverage |
 
 ## Current Focus
 

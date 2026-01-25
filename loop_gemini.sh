@@ -31,7 +31,7 @@ while [[ $ITERATION -lt $MAX_ITERATIONS ]]; do
 
     # Run Gemini CLI in headless mode with tools enabled
     # Using pipe instead of -p flag for better output handling
-    cat "$PROMPT_FILE" | gemini --approval-mode=yolo
+    cat "$PROMPT_FILE" | gemini --approval-mode=yolo --output-format stream-json
 
     # Run CI validation (build mode only)
     if [[ "$MODE" == "build" ]]; then

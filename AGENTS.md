@@ -54,3 +54,34 @@ When operating within the Ralph loop:
 1. Implement code changes
 2. Run `scripts/ci.sh` (pytest + basedpyright + ruff)
 3. Fix any failures before completing iteration
+
+## btca
+
+When you need up-to-date information about technologies used in this project, use btca to query source repositories directly.
+
+**Available resources**: zod, typescript, bun, modelContextProtocol, pydantic, biome, pytest, gemini
+
+### Usage
+
+```bash
+btca ask -r <resource> -q "<question>"
+```
+
+Use multiple `-r` flags to query multiple resources at once:
+
+```bash
+btca ask -r zod -r typescript -q "How do I use Zod with TypeScript for runtime validation?"
+```
+
+### Examples
+
+```bash
+# Query MCP Python SDK for implementation details
+btca ask -r modelContextProtocol -q "How do I create a custom MCP tool with async handlers?"
+
+# Query Gemini CLI for troubleshooting terminal output
+btca ask -r gemini -q "Why aren't agent responses showing in terminal output?"
+
+# Query multiple testing frameworks
+btca ask -r pytest -r pydantic -q "How to validate async test fixtures with Pydantic models?"
+```

@@ -76,4 +76,58 @@ describe("plist parser", () => {
     expect(parseActions(invalid)).toEqual([]);
     expect(parseInputTypes(invalid)).toBeNull();
   });
+
+  it("handles empty data", () => {
+    expect(parseActions(new Uint8Array(0))).toEqual([]);
+    expect(parseInputTypes(new Uint8Array(0))).toBeNull();
+  });
+
+  it("handles various parameter types in coerceJsonValue", () => {
+    const now = new Date();
+    now.setMilliseconds(0);
+    const data = {
+      WFWorkflowActions: [
+        {
+          WFWorkflowActionIdentifier: "is.workflow.actions.test",
+          WFWorkflowActionParameters: {
+            date: now,
+            uint8: new Uint8Array([87, 111, 114, 108, 100]),
+            array: [1, "two", { three: 3 }],
+            nested: { foo: "bar" },
+            number: 42,
+            bool: true,
+            nullVal: null,
+          },
+        },
+      ],
+    };
+    const xml = build(data);
+    const actions = parseActions(new TextEncoder().encode(xml));
+    const params = actions[0]?.parameters;
+
+    expect(params?.date).toBe(now.toISOString());
+    expect(params?.uint8).toBe("World");
+    expect(params?.array).toEqual([1, "two", { three: 3 }]);
+    expect(params?.nested).toEqual({ foo: "bar" });
+    expect(params?.number).toBe(42);
+    expect(params?.bool).toBe(true);
+    expect(params?.nullVal).toBeNull();
+  });
+
+  it("skips actions with missing or empty identifiers", () => {
+    const data = {
+      WFWorkflowActions: [
+        {
+          WFWorkflowActionParameters: { WFDelayTime: 5 },
+        },
+        {
+          WFWorkflowActionIdentifier: "",
+          WFWorkflowActionParameters: { WFDelayTime: 1 },
+        },
+      ],
+    };
+    const xml = build(data);
+    const actions = parseActions(new TextEncoder().encode(xml));
+    expect(actions).toHaveLength(0);
+  });
 });

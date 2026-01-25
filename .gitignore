@@ -1,5 +1,6 @@
 # Local tooling
 .claude/
+.btca/
 
 # Python
 __pycache__/
