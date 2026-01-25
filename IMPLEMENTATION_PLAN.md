@@ -22,7 +22,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 
 ### Phase 2: Port Core Logic
 
-- [ ] Task 2.1 - Port config/env handling to TypeScript
+- [x] Task 2.1 - Port config/env handling to TypeScript
 - [ ] Task 2.2 - Port database read access and queries to TypeScript
 - [ ] Task 2.3 - Port plist parsing + action extraction to TypeScript
 - [ ] Task 2.4 - Port action catalog discovery to TypeScript
@@ -50,10 +50,11 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 0.2 | 2 | Documented tool inputs/outputs parity checklist |
 | Task 1.2 | 3 | Added TS entrypoint, server, and tool module skeletons |
 | Task 1.3 | 4 | Added Biome linting, TS typecheck scripts, and Bun test scaffold |
+| Task 2.1 | 5 | Ported config/env handling with Bun tests |
 
 ## Current Focus
 
-**Next Task:** Task 1.3
+**Next Task:** Task 2.2
 **Blockers:** None
 
 ## Bugs
