@@ -25,7 +25,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 - [x] Task 2.1 - Port config/env handling to TypeScript
 - [x] Task 2.2 - Port database read access and queries to TypeScript
 - [x] Task 2.3 - Port plist parsing + action extraction to TypeScript
-- [ ] Task 2.4 - Port action catalog discovery to TypeScript
+- [x] Task 2.4 - Port action catalog discovery to TypeScript
 - [ ] Task 2.5 - Port execution helpers for run_shortcut parity
 
 ### Phase 3: MCP Server + Tools
@@ -54,10 +54,11 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 2.1 | 5 | Ported config/env handling with Bun tests |
 | Task 2.2 | 6 | Added Bun sqlite database access layer + tests |
 | Task 2.3 | 7 | Ported plist parsing + action extraction with Bun tests |
+| Task 2.4 | 8 | Ported action catalog discovery with Bun tests |
 
 ## Current Focus
 
-**Next Task:** Task 2.4
+**Next Task:** Task 2.5
 **Blockers:** None
 
 ## Bugs
