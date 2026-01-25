@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Iterable, cast
 
 from .models import ShortcutAction
+from .references import transform_references
 
 SHORTCUTS_INFO_PLIST = Path("/System/Applications/Shortcuts.app/Contents/Info.plist")
 
@@ -88,8 +89,12 @@ def build_workflow_plist(
 def build_workflow_actions(
     actions: Iterable[ShortcutAction],
 ) -> list[dict[str, object]]:
+    # Transform simplified references into proper Shortcuts format
+    actions_list = list(actions)
+    transformed = transform_references(actions_list)
+
     built: list[dict[str, object]] = []
-    for action in actions:
+    for action in transformed:
         params = _coerce_plist_mapping(action.parameters)
         built.append(
             {

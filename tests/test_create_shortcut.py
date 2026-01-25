@@ -49,7 +49,8 @@ async def test_create_shortcut_writes_signed_file(
     assert result["success"] is True
     assert result["name"] == "Test Shortcut"
 
-    unsigned_path = tmp_path / "Test Shortcut.shortcut"
-    signed_path = tmp_path / "Test Shortcut signed.shortcut"
-    assert unsigned_path.exists()
-    assert signed_path.exists()
+    # After rename, only the final import path exists
+    # (unsigned is deleted, signed is renamed)
+    final_path = tmp_path / "Test Shortcut.shortcut"
+    assert final_path.exists()
+    assert result["file_path"] == str(final_path)

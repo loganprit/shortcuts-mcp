@@ -21,7 +21,11 @@ def test_build_workflow_plist_roundtrip():
 
     assert len(parsed) == 1
     assert parsed[0].identifier == "is.workflow.actions.gettext"
-    assert parsed[0].parameters == {"WFTextActionText": "Hello"}
+    # Check that original parameters are preserved
+    assert parsed[0].parameters["WFTextActionText"] == "Hello"
+    # UUID is auto-assigned by reference transformation
+    assert "UUID" in parsed[0].parameters
+    assert isinstance(parsed[0].parameters["UUID"], str)
 
 
 def test_build_workflow_plist_drops_none_values():
@@ -40,4 +44,29 @@ def test_build_workflow_plist_drops_none_values():
     )
     parsed = parse_actions(payload)
 
-    assert parsed[0].parameters == {"WFCommentActionText": "Hi"}
+    # Check that original parameters are preserved and None values are dropped
+    assert parsed[0].parameters["WFCommentActionText"] == "Hi"
+    assert "WFUnused" not in parsed[0].parameters
+    # UUID is auto-assigned by reference transformation
+    assert "UUID" in parsed[0].parameters
+
+
+def test_build_workflow_plist_preserves_existing_uuid():
+    """Verify that existing UUIDs are preserved, not replaced."""
+    existing_uuid = "CUSTOM-UUID-12345"
+    actions = [
+        ShortcutAction(
+            identifier="is.workflow.actions.gettext",
+            parameters={"WFTextActionText": "Hello", "UUID": existing_uuid},
+        )
+    ]
+
+    payload = build_workflow_plist(
+        "Sample",
+        actions,
+        client_release="7.0",
+        client_version="4046.0.2.2",
+    )
+    parsed = parse_actions(payload)
+
+    assert parsed[0].parameters["UUID"] == existing_uuid

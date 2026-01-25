@@ -18,6 +18,7 @@ from .database import (
 )
 from .database import get_folders as fetch_folders
 from .executor import (
+    delete_shortcut,
     open_file,
     run_via_applescript,
     run_via_url_scheme,
@@ -242,17 +243,32 @@ async def create_shortcut(
     validate: bool = True,
     install: bool = True,
     sign_mode: Literal["anyone", "people-who-know-me"] = "anyone",
-    if_exists: Literal["error", "rename"] = "error",
+    if_exists: Literal["error", "rename", "replace"] = "error",
     wait_for_import: bool = True,
     wait_timeout_s: int = 10,
 ) -> dict[str, object]:
     """Create and import a new shortcut from provided actions."""
     warnings: list[str] = []
-    resolved_name = await _resolve_shortcut_name(name, if_exists=if_exists)
-    if resolved_name != name:
-        warnings.append(
-            f"Shortcut '{name}' already exists. Using '{resolved_name}' instead."
-        )
+
+    # Check for existing shortcuts (including " signed" variants)
+    existing = await _find_existing_shortcut(name)
+    resolved_name = name
+
+    if existing:
+        if if_exists == "error":
+            raise ValueError(f"Shortcut already exists: {existing}")
+        elif if_exists == "replace":
+            # Delete the existing shortcut before import
+            try:
+                await delete_shortcut(existing)
+                warnings.append(f"Replaced existing shortcut '{existing}'.")
+            except RuntimeError as e:
+                warnings.append(f"Could not delete existing shortcut: {e}")
+        elif if_exists == "rename":
+            resolved_name = await _generate_unique_name(name)
+            warnings.append(
+                f"Shortcut '{name}' already exists. Using '{resolved_name}' instead."
+            )
 
     if validate:
         warnings.extend(await _validate_actions(actions))
@@ -260,7 +276,7 @@ async def create_shortcut(
     temp_dir = Path(tempfile.mkdtemp(prefix="shortcuts-mcp-"))
     filename = _safe_shortcut_filename(resolved_name)
     unsigned_path = temp_dir / f"{filename}.shortcut"
-    signed_path = temp_dir / f"{filename} signed.shortcut"
+    signed_temp_path = temp_dir / f"{filename} signed.shortcut"
 
     payload = build_workflow_plist(
         resolved_name,
@@ -268,25 +284,39 @@ async def create_shortcut(
         input_types=input_types,
     )
     unsigned_path.write_bytes(payload)
-    await sign_shortcut_file(str(unsigned_path), str(signed_path), sign_mode)
+    await sign_shortcut_file(str(unsigned_path), str(signed_temp_path), sign_mode)
+
+    # Rename signed file to remove " signed" suffix for clean import
+    # macOS Shortcuts uses the filename (minus extension) as the shortcut name
+    unsigned_path.unlink()  # Remove unsigned version
+    final_import_path = temp_dir / f"{filename}.shortcut"
+    signed_temp_path.rename(final_import_path)
 
     import_confirmed: bool | None = None
+    imported_name: str | None = None
+
     if install:
-        await open_file(str(signed_path))
+        await open_file(str(final_import_path))
         if wait_for_import:
-            import_confirmed = await _wait_for_shortcut_import(
+            # Check for both the intended name and potential " signed" variant
+            imported_name, import_confirmed = await _wait_for_shortcut_import_flexible(
                 resolved_name, timeout_s=wait_timeout_s
             )
             if not import_confirmed:
                 warnings.append(
                     "Import not confirmed yet. Shortcuts may still be prompting."
                 )
+            elif imported_name and imported_name != resolved_name:
+                warnings.append(
+                    f"Shortcut was imported as '{imported_name}' "
+                    f"instead of '{resolved_name}'."
+                )
 
     return {
         "success": True,
         "name": resolved_name,
-        "unsigned_path": str(unsigned_path),
-        "signed_path": str(signed_path),
+        "imported_name": imported_name,
+        "file_path": str(final_import_path),
         "import_attempted": install,
         "import_confirmed": import_confirmed,
         "warnings": warnings,
@@ -304,31 +334,56 @@ def main() -> None:
     mcp.run()
 
 
-async def _resolve_shortcut_name(name: str, if_exists: str) -> str:
-    existing = await get_shortcut_by_name(name)
-    if not existing:
-        return name
-    if if_exists == "error":
-        raise ValueError(f"Shortcut already exists: {name}")
+async def _find_existing_shortcut(name: str) -> str | None:
+    """Check if a shortcut with the given name (or " signed" variant) exists.
 
+    Returns the actual name if found, None otherwise.
+    """
+    # Check exact name first
+    if await get_shortcut_by_name(name):
+        return name
+
+    # Check for " signed" variant (legacy naming issue)
+    signed_name = f"{name} signed"
+    if await get_shortcut_by_name(signed_name):
+        return signed_name
+
+    return None
+
+
+async def _generate_unique_name(name: str) -> str:
+    """Generate a unique shortcut name by appending a suffix."""
     suffix = 2
     while True:
         candidate = f"{name} ({suffix})"
-        if await get_shortcut_by_name(candidate) is None:
+        if await _find_existing_shortcut(candidate) is None:
             return candidate
         suffix += 1
 
 
-async def _wait_for_shortcut_import(name: str, timeout_s: int) -> bool:
+async def _wait_for_shortcut_import_flexible(
+    name: str, timeout_s: int
+) -> tuple[str | None, bool]:
+    """Wait for shortcut import, checking both exact name and " signed" variant.
+
+    Returns (imported_name, success) tuple.
+    """
     if timeout_s <= 0:
-        return False
+        return None, False
+
     loop = asyncio.get_running_loop()
     deadline = loop.time() + timeout_s
+
+    # Names to check (prioritize exact name)
+    names_to_check = [name, f"{name} signed"]
+
     while loop.time() < deadline:
-        if await get_shortcut_by_name(name):
-            return True
+        for check_name in names_to_check:
+            if await get_shortcut_by_name(check_name):
+                return check_name, True
         await asyncio.sleep(0.5)
-    return False
+
+    return None, False
 
 
 def _safe_shortcut_filename(name: str) -> str:
@@ -345,19 +400,42 @@ async def _validate_actions(actions: list[ShortcutAction]) -> list[str]:
         warnings.append("Action catalog empty; skipping validation.")
         return warnings
 
+    # Standard parameters added automatically (not user-provided)
+    auto_params = {"UUID", "GroupingIdentifier"}
+
     for action in actions:
         info = action_map.get(action.identifier)
         if info is None:
             raise ValueError(f"Unknown action identifier: {action.identifier}")
         if not info.parameters:
             continue
+
+        param_names = set(action.parameters.keys())
         allowed = {param.name for param in info.parameters}
-        unknown = sorted(key for key in action.parameters.keys() if key not in allowed)
+
+        # Check for unknown parameters (excluding auto-generated ones)
+        unknown = sorted(
+            key for key in param_names if key not in allowed and key not in auto_params
+        )
         if unknown:
             keys = ", ".join(unknown)
             warnings.append(
                 f"Action {action.identifier} has unknown parameter keys: {keys}"
             )
+
+        # Check for missing required parameters
+        required_params = {
+            param.name for param in info.parameters if not param.is_optional
+        }
+        # GroupingIdentifier is often "required" in schema but auto-provided
+        provided = param_names | auto_params
+        missing = sorted(required_params - provided)
+        if missing:
+            keys = ", ".join(missing)
+            warnings.append(
+                f"Action {action.identifier} may be missing required parameters: {keys}"
+            )
+
     return warnings
 
 
