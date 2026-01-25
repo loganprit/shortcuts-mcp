@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer";
 
-import { parse as parseXml } from "plist";
 import { parseBuffer } from "bplist-parser";
+import { parse as parseXml } from "plist";
 
 import type { JsonValue, ShortcutAction } from "./types.js";
 
@@ -47,9 +47,7 @@ const coerceJsonValue = (value: unknown): JsonValue => {
     return new TextDecoder("utf-8", { fatal: false }).decode(value);
   }
   if (value instanceof ArrayBuffer) {
-    return new TextDecoder("utf-8", { fatal: false }).decode(
-      new Uint8Array(value),
-    );
+    return new TextDecoder("utf-8", { fatal: false }).decode(new Uint8Array(value));
   }
   if (Array.isArray(value)) {
     return value.map((item) => coerceJsonValue(item));

@@ -1,12 +1,8 @@
 import { z } from "zod";
 
-import {
-  getAllShortcuts,
-  getShortcutActions,
-  searchShortcutsByName,
-} from "../database.js";
+import { getAllShortcuts, getShortcutActions, searchShortcutsByName } from "../database.js";
 import { actionSearchBlob, parseActions } from "../parser.js";
-import type { ShortcutMetadata } from "../types.js";
+import type { McpToolResponse, ShortcutMetadata } from "../types.js";
 
 export const TOOL_NAME = "search_shortcuts";
 
@@ -17,9 +13,7 @@ export const INPUT_SCHEMA = {
 
 export type SearchShortcutsInput = z.infer<z.ZodObject<typeof INPUT_SCHEMA>>;
 
-export const searchShortcuts = async (
-  input: SearchShortcutsInput,
-): Promise<unknown> => {
+export const searchShortcuts = async (input: SearchShortcutsInput): Promise<McpToolResponse> => {
   const searchIn = input.search_in ?? "name";
   const matches = new Map<string, ShortcutMetadata>();
 
@@ -57,5 +51,7 @@ export const searchShortcuts = async (
     }
   }
 
-  return { shortcuts: Array.from(matches.values()) };
+  return {
+    content: [{ type: "text", text: JSON.stringify({ shortcuts: Array.from(matches.values()) }) }],
+  };
 };

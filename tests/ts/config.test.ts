@@ -1,6 +1,6 @@
+import { describe, expect, it } from "bun:test";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "bun:test";
 
 import {
   DEFAULT_DB_PATH,
@@ -11,11 +11,7 @@ import {
   getLogLevel,
 } from "../../src/ts/config.js";
 
-const withEnv = <T>(
-  key: string,
-  value: string | undefined,
-  fn: () => T,
-): T => {
+const withEnv = <T>(key: string, value: string | undefined, fn: () => T): T => {
   const previous = process.env[key];
 
   if (value === undefined) {
@@ -37,12 +33,7 @@ const withEnv = <T>(
 
 describe("config defaults", () => {
   it("uses the expected default database path", () => {
-    const expected = path.join(
-      os.homedir(),
-      "Library",
-      "Shortcuts",
-      "Shortcuts.sqlite",
-    );
+    const expected = path.join(os.homedir(), "Library", "Shortcuts", "Shortcuts.sqlite");
     expect(DEFAULT_DB_PATH).toBe(expected);
   });
 
@@ -51,9 +42,7 @@ describe("config defaults", () => {
     const timeout = withEnv("SHORTCUTS_DEFAULT_TIMEOUT", undefined, () =>
       getDefaultTimeoutSeconds(),
     );
-    const logLevel = withEnv("SHORTCUTS_LOG_LEVEL", undefined, () =>
-      getLogLevel(),
-    );
+    const logLevel = withEnv("SHORTCUTS_LOG_LEVEL", undefined, () => getLogLevel());
 
     expect(dbPath).toBe(DEFAULT_DB_PATH);
     expect(timeout).toBe(DEFAULT_TIMEOUT_SECONDS);
@@ -63,16 +52,12 @@ describe("config defaults", () => {
 
 describe("config overrides", () => {
   it("expands a tilde database path override", () => {
-    const custom = withEnv("SHORTCUTS_DB_PATH", "~/Shortcuts.db", () =>
-      getDbPath(),
-    );
+    const custom = withEnv("SHORTCUTS_DB_PATH", "~/Shortcuts.db", () => getDbPath());
     expect(custom).toBe(path.join(os.homedir(), "Shortcuts.db"));
   });
 
   it("parses the timeout override", () => {
-    const timeout = withEnv("SHORTCUTS_DEFAULT_TIMEOUT", "45", () =>
-      getDefaultTimeoutSeconds(),
-    );
+    const timeout = withEnv("SHORTCUTS_DEFAULT_TIMEOUT", "45", () => getDefaultTimeoutSeconds());
     expect(timeout).toBe(45);
   });
 
@@ -84,9 +69,7 @@ describe("config overrides", () => {
   });
 
   it("reads the log level override", () => {
-    const logLevel = withEnv("SHORTCUTS_LOG_LEVEL", "DEBUG", () =>
-      getLogLevel(),
-    );
+    const logLevel = withEnv("SHORTCUTS_LOG_LEVEL", "DEBUG", () => getLogLevel());
     expect(logLevel).toBe("DEBUG");
   });
 });

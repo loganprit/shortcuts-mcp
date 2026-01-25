@@ -39,7 +39,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 - [x] Task 4.1 - Replace pytest coverage with Bun tests for parser/actions
 - [x] Task 4.2 - Add parity validation checklist/runbook for local stdio checks
 - [x] Task 4.3 - Update README for Bun stdio server
-- [ ] Task 4.4 - Update scripts/ci.sh for Bun lint/typecheck/test
+- [x] Task 4.4 - Update scripts/ci.sh for Bun lint/typecheck/test
 - [ ] Task 4.5 - Remove Python implementation after parity verification
 - [ ] Task 4.6 - Move /ts to /src and finalize project structure
 
@@ -62,17 +62,22 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 4.1 | 13 | Ported parser and actions tests to Bun with high coverage |
 | Task 4.2 | 14 | Added parity validation runbook with stdio test commands |
 | Task 4.3 | 15 | Updated README for Bun stdio server with setup, tools, and integration docs |
+| Task 4.4 | 16 | Updated scripts/ci.sh to use Bun commands (test, typecheck, lint, format:check, server startup) |
 
 ## Current Focus
 
-**Next Task:** Task 4.4
-**Blockers:** None
+**Next Task:** Task 4.5
+**Blockers:** None - all P0 bugs fixed
 
 ## Bugs
 
 | ID | Priority | Description | Status |
 |----|----------|-------------|--------|
+| B1 | P0 | MCP SDK tool registration type errors - tools must return `{ content: [...] }` format, not raw objects | Fixed |
+| B2 | P1 | Missing plist type declarations - vendor.d.ts not being picked up by tsc | Fixed |
+| B3 | P1 | executor.test.ts line 124 - expect().toBeNull() called with string argument | Fixed |
 
 ## Notes
 
 - Iteration 1: defined migration spec and task breakdown for TS/Bun stdio move
+- Iteration 17: Fixed all bugs (B1, B2, B3) - tool handlers now return MCP-compliant `{ content: [...] }` format, vendor.d.ts simplified, test type assertion fixed

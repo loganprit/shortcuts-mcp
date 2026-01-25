@@ -1,13 +1,13 @@
 import { describe, expect, it } from "bun:test";
 
 import {
+  type CommandRunner,
   applescriptLiteral,
   buildApplescript,
   buildShortcutUrl,
   runViaApplescript,
   runViaUrlScheme,
   stringifyInput,
-  type CommandRunner,
 } from "../../src/ts/executor.js";
 import type { JsonValue } from "../../src/ts/types.js";
 
@@ -72,9 +72,7 @@ describe("executor commands", () => {
       exitCode: 1,
     });
 
-    await expect(
-      runViaUrlScheme("Test", "input", 1, runner),
-    ).rejects.toThrow("open failed");
+    await expect(runViaUrlScheme("Test", "input", 1, runner)).rejects.toThrow("open failed");
   });
 
   it("handles empty stderr by using stdout on failure", async () => {
@@ -84,9 +82,7 @@ describe("executor commands", () => {
       exitCode: 1,
     });
 
-    await expect(
-      runViaUrlScheme("Test", "input", null, runner),
-    ).rejects.toThrow("failed");
+    await expect(runViaUrlScheme("Test", "input", null, runner)).rejects.toThrow("failed");
   });
 
   it("uses a fallback error message when no output is present", async () => {
@@ -96,9 +92,7 @@ describe("executor commands", () => {
       exitCode: 2,
     });
 
-    await expect(
-      runViaUrlScheme("Test", null, null, runner),
-    ).rejects.toThrow("open returned 2");
+    await expect(runViaUrlScheme("Test", null, null, runner)).rejects.toThrow("open returned 2");
   });
 
   it("passes timeout milliseconds to the runner", async () => {
@@ -113,9 +107,9 @@ describe("executor commands", () => {
   });
 
   it("stringifies non-string input for applescript", async () => {
-    let capturedScript: string | null = null;
+    let capturedScript = "";
     const runner: CommandRunner = async (_command, args) => {
-      capturedScript = args[1] ?? null;
+      capturedScript = args[1] ?? "";
       return { stdout: "", stderr: "", exitCode: 0 };
     };
 

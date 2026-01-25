@@ -1,12 +1,7 @@
 import os from "node:os";
 import path from "node:path";
 
-export const DEFAULT_DB_PATH = path.join(
-  os.homedir(),
-  "Library",
-  "Shortcuts",
-  "Shortcuts.sqlite",
-);
+export const DEFAULT_DB_PATH = path.join(os.homedir(), "Library", "Shortcuts", "Shortcuts.sqlite");
 export const DEFAULT_TIMEOUT_SECONDS = 30;
 export const DEFAULT_LOG_LEVEL = "INFO";
 
@@ -28,8 +23,7 @@ export const getDbPath = (): string => {
 };
 
 export const getDefaultTimeoutSeconds = (): number => {
-  const rawValue =
-    process.env.SHORTCUTS_DEFAULT_TIMEOUT ?? `${DEFAULT_TIMEOUT_SECONDS}`;
+  const rawValue = process.env.SHORTCUTS_DEFAULT_TIMEOUT ?? `${DEFAULT_TIMEOUT_SECONDS}`;
   const parsed = Number.parseInt(rawValue, 10);
   return Number.isNaN(parsed) ? DEFAULT_TIMEOUT_SECONDS : parsed;
 };

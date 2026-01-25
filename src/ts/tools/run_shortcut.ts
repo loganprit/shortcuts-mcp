@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { getDefaultTimeoutSeconds } from "../config.js";
 import { runViaApplescript, runViaUrlScheme } from "../executor.js";
+import type { McpToolResponse } from "../types.js";
 import { jsonValueSchema } from "./schemas.js";
 
 export const TOOL_NAME = "run_shortcut";
@@ -21,11 +22,11 @@ export type RunShortcutResult = {
   execution_time_ms: number | null;
 };
 
-export const runShortcut = async (
-  input: RunShortcutInput,
-): Promise<RunShortcutResult> => {
+export const runShortcut = async (input: RunShortcutInput): Promise<McpToolResponse> => {
   const timeoutValue = input.timeout ?? getDefaultTimeoutSeconds();
   const waitForResult = input.wait_for_result !== false;
+
+  let result: RunShortcutResult;
 
   if (waitForResult) {
     try {
@@ -35,13 +36,28 @@ export const runShortcut = async (
         timeoutValue,
       );
 
-      return {
+      result = {
         success: returncode === 0,
         output,
         execution_time_ms: elapsedMs,
       };
     } catch (error) {
-      return {
+      result = {
+        success: false,
+        output: error instanceof Error ? error.message : String(error),
+        execution_time_ms: null,
+      };
+    }
+  } else {
+    try {
+      await runViaUrlScheme(input.name, input.input ?? null, timeoutValue);
+      result = {
+        success: true,
+        output: null,
+        execution_time_ms: null,
+      };
+    } catch (error) {
+      result = {
         success: false,
         output: error instanceof Error ? error.message : String(error),
         execution_time_ms: null,
@@ -49,18 +65,7 @@ export const runShortcut = async (
     }
   }
 
-  try {
-    await runViaUrlScheme(input.name, input.input ?? null, timeoutValue);
-    return {
-      success: true,
-      output: null,
-      execution_time_ms: null,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      output: error instanceof Error ? error.message : String(error),
-      execution_time_ms: null,
-    };
-  }
+  return {
+    content: [{ type: "text", text: JSON.stringify(result) }],
+  };
 };

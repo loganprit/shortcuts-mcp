@@ -1,5 +1,5 @@
-import { Glob } from "bun";
 import { join } from "node:path";
+import { Glob } from "bun";
 
 import { getAllShortcuts, getShortcutActions } from "./database.js";
 import { parseActions } from "./parser.js";
@@ -27,9 +27,7 @@ const coerceJsonValue = (value: unknown): JsonValue => {
     return new TextDecoder("utf-8", { fatal: false }).decode(value);
   }
   if (value instanceof ArrayBuffer) {
-    return new TextDecoder("utf-8", { fatal: false }).decode(
-      new Uint8Array(value),
-    );
+    return new TextDecoder("utf-8", { fatal: false }).decode(new Uint8Array(value));
   }
   if (Array.isArray(value)) {
     return value.map((item) => coerceJsonValue(item));
@@ -44,9 +42,7 @@ const coerceJsonValue = (value: unknown): JsonValue => {
   return String(value);
 };
 
-const coerceJsonMapping = (
-  value: Record<string, JsonValue>,
-): Record<string, JsonValue> => {
+const coerceJsonMapping = (value: Record<string, JsonValue>): Record<string, JsonValue> => {
   const mapped: Record<string, JsonValue> = {};
   for (const [key, entry] of Object.entries(value)) {
     mapped[key] = coerceJsonValue(entry);
@@ -54,8 +50,7 @@ const coerceJsonMapping = (
   return mapped;
 };
 
-const safeText = (value: unknown): string | null =>
-  typeof value === "string" ? value : null;
+const safeText = (value: unknown): string | null => (typeof value === "string" ? value : null);
 
 const extractLocalizedText = (value: unknown): string | null => {
   if (typeof value === "string") {
@@ -126,7 +121,7 @@ export const deriveCategory = (identifier: string, fqtn: string | null): string 
   if (identifier.startsWith("com.apple.ShortcutsActions.")) {
     return "apple.shortcuts";
   }
-  if (fqtn && fqtn.startsWith("ShortcutsActions.")) {
+  if (fqtn?.startsWith("ShortcutsActions.")) {
     return "apple.shortcuts";
   }
   if (identifier.startsWith("com.apple.")) {
@@ -237,9 +232,7 @@ export const parseActionsdataPayload = (
   return parsed;
 };
 
-export const parseCuratedPayload = (
-  payload: Record<string, unknown>,
-): ActionInfo[] => {
+export const parseCuratedPayload = (payload: Record<string, unknown>): ActionInfo[] => {
   const actionsData = asRecord(payload.actions);
   const curatedActions = actionsData ?? payload;
   const actions: ActionInfo[] = [];
@@ -249,8 +242,7 @@ export const parseCuratedPayload = (
       continue;
     }
     const parameters = parseCuratedParameters(entryMap.parameters);
-    const category =
-      safeText(entryMap.category) ?? deriveCategory(identifier, null);
+    const category = safeText(entryMap.category) ?? deriveCategory(identifier, null);
     actions.push({
       identifier,
       source: "curated",
@@ -280,7 +272,7 @@ const scanActionsdataPaths = async (
       }
       actions.push(...parseActionsdataPayload(payloadMap, source));
     } catch {
-      continue;
+      // Skip malformed JSON files
     }
   }
   return actions;
@@ -302,8 +294,7 @@ export const mergeAction = (base: ActionInfo, incoming: ActionInfo): ActionInfo 
   description: base.description ?? incoming.description,
   category: base.category || incoming.category,
   parameters: base.parameters.length > 0 ? base.parameters : incoming.parameters,
-  platform_availability:
-    base.platform_availability ?? incoming.platform_availability,
+  platform_availability: base.platform_availability ?? incoming.platform_availability,
   usage_count: base.usage_count + incoming.usage_count,
   example_params: base.example_params ?? incoming.example_params,
 });
@@ -318,8 +309,7 @@ export class ActionCatalog {
     search?: string | null;
     force_refresh?: boolean;
   }): Promise<{ actions: ActionInfo[]; cached: boolean }> {
-    const { source = null, category = null, search = null, force_refresh = false } =
-      options ?? {};
+    const { source = null, category = null, search = null, force_refresh = false } = options ?? {};
     let cached = false;
     if (!this.cache || force_refresh) {
       await this.refreshCache();
@@ -342,11 +332,9 @@ export class ActionCatalog {
     if (search) {
       const query = search.toLowerCase();
       actions = actions.filter((action) => {
-        const parts = [
-          action.identifier,
-          action.title ?? "",
-          action.description ?? "",
-        ].filter((part) => part.length > 0);
+        const parts = [action.identifier, action.title ?? "", action.description ?? ""].filter(
+          (part) => part.length > 0,
+        );
         return parts.join(" ").toLowerCase().includes(query);
       });
     }
@@ -379,10 +367,7 @@ export class ActionCatalog {
 
   private async scanSystemActions(): Promise<ActionInfo[]> {
     const root = "/System/Library/PrivateFrameworks";
-    const paths = await listGlobPaths(
-      root,
-      "*/Metadata.appintents/extract.actionsdata",
-    );
+    const paths = await listGlobPaths(root, "*/Metadata.appintents/extract.actionsdata");
     return scanActionsdataPaths(paths, "system");
   }
 
@@ -393,10 +378,7 @@ export class ActionCatalog {
         root,
         "*.app/Contents/Resources/Metadata.appintents/extract.actionsdata",
       )),
-      ...(await listGlobPaths(
-        root,
-        "*.app/Resources/Metadata.appintents/extract.actionsdata",
-      )),
+      ...(await listGlobPaths(root, "*.app/Resources/Metadata.appintents/extract.actionsdata")),
     ];
     return scanActionsdataPaths(paths, "apps");
   }
@@ -412,18 +394,9 @@ export class ActionCatalog {
         continue;
       }
       for (const action of parseActions(data)) {
-        usageCounts.set(
-          action.identifier,
-          (usageCounts.get(action.identifier) ?? 0) + 1,
-        );
-        if (
-          !exampleParams.has(action.identifier) &&
-          Object.keys(action.parameters).length > 0
-        ) {
-          exampleParams.set(
-            action.identifier,
-            coerceJsonMapping(action.parameters),
-          );
+        usageCounts.set(action.identifier, (usageCounts.get(action.identifier) ?? 0) + 1);
+        if (!exampleParams.has(action.identifier) && Object.keys(action.parameters).length > 0) {
+          exampleParams.set(action.identifier, coerceJsonMapping(action.parameters));
         }
       }
     }
@@ -447,10 +420,7 @@ export class ActionCatalog {
   }
 
   private async getCuratedActions(): Promise<ActionInfo[]> {
-    const curatedPath = new URL(
-      "../shortcuts_mcp/data/curated_actions.json",
-      import.meta.url,
-    );
+    const curatedPath = new URL("../shortcuts_mcp/data/curated_actions.json", import.meta.url);
     try {
       const file = Bun.file(curatedPath);
       const exists = await file.exists();

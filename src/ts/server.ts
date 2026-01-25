@@ -2,34 +2,34 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 import {
-  getAvailableActions,
   INPUT_SCHEMA as GET_AVAILABLE_ACTIONS_INPUT_SCHEMA,
   TOOL_NAME as GET_AVAILABLE_ACTIONS_NAME,
+  getAvailableActions,
 } from "./tools/get_available_actions.js";
 import {
-  getFolders,
   INPUT_SCHEMA as GET_FOLDERS_INPUT_SCHEMA,
   TOOL_NAME as GET_FOLDERS_NAME,
+  getFolders,
 } from "./tools/get_folders.js";
 import {
-  getShortcut,
   INPUT_SCHEMA as GET_SHORTCUT_INPUT_SCHEMA,
   TOOL_NAME as GET_SHORTCUT_NAME,
+  getShortcut,
 } from "./tools/get_shortcut.js";
 import {
   INPUT_SCHEMA as LIST_SHORTCUTS_INPUT_SCHEMA,
-  listShortcuts,
   TOOL_NAME as LIST_SHORTCUTS_NAME,
+  listShortcuts,
 } from "./tools/list_shortcuts.js";
 import {
   INPUT_SCHEMA as RUN_SHORTCUT_INPUT_SCHEMA,
-  runShortcut,
   TOOL_NAME as RUN_SHORTCUT_NAME,
+  runShortcut,
 } from "./tools/run_shortcut.js";
 import {
   INPUT_SCHEMA as SEARCH_SHORTCUTS_INPUT_SCHEMA,
-  searchShortcuts,
   TOOL_NAME as SEARCH_SHORTCUTS_NAME,
+  searchShortcuts,
 } from "./tools/search_shortcuts.js";
 
 const SERVER_NAME = "Shortcuts MCP";
@@ -42,11 +42,7 @@ export const createServer = (): McpServer => {
   server.tool(GET_SHORTCUT_NAME, GET_SHORTCUT_INPUT_SCHEMA, getShortcut);
   server.tool(SEARCH_SHORTCUTS_NAME, SEARCH_SHORTCUTS_INPUT_SCHEMA, searchShortcuts);
   server.tool(GET_FOLDERS_NAME, GET_FOLDERS_INPUT_SCHEMA, getFolders);
-  server.tool(
-    GET_AVAILABLE_ACTIONS_NAME,
-    GET_AVAILABLE_ACTIONS_INPUT_SCHEMA,
-    getAvailableActions,
-  );
+  server.tool(GET_AVAILABLE_ACTIONS_NAME, GET_AVAILABLE_ACTIONS_INPUT_SCHEMA, getAvailableActions);
   server.tool(RUN_SHORTCUT_NAME, RUN_SHORTCUT_INPUT_SCHEMA, runShortcut);
 
   return server;

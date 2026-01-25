@@ -133,9 +133,7 @@ describe("actions catalog parsing", () => {
 
   it("derives categories from identifiers", () => {
     expect(deriveCategory("is.workflow.actions.delay", null)).toBe("workflow");
-    expect(deriveCategory("com.apple.ShortcutsActions.Test", null)).toBe(
-      "apple.shortcuts",
-    );
+    expect(deriveCategory("com.apple.ShortcutsActions.Test", null)).toBe("apple.shortcuts");
     expect(deriveCategory("com.apple.Foo", null)).toBe("apple.system");
     expect(deriveCategory("com.example.App", null)).toBe("third-party");
   });
@@ -186,7 +184,7 @@ describe("actions catalog parsing", () => {
 
     // Mock internal state to avoid filesystem/DB access
     // We use type casting to access private cache for testing
-    (catalog as any).cache = {
+    (catalog as unknown as { cache: Record<string, unknown> }).cache = {
       "is.workflow.actions.delay": {
         identifier: "is.workflow.actions.delay",
         source: "system",

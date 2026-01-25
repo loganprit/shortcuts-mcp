@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { getShortcutActions, getShortcutByName } from "../database.js";
 import { parseActions, parseInputTypes } from "../parser.js";
-import type { ShortcutDetail } from "../types.js";
+import type { McpToolResponse, ShortcutDetail } from "../types.js";
 
 export const TOOL_NAME = "get_shortcut";
 
@@ -13,7 +13,7 @@ export const INPUT_SCHEMA = {
 
 export type GetShortcutInput = z.infer<z.ZodObject<typeof INPUT_SCHEMA>>;
 
-export const getShortcut = async (input: GetShortcutInput): Promise<ShortcutDetail> => {
+export const getShortcut = async (input: GetShortcutInput): Promise<McpToolResponse> => {
   const row = await getShortcutByName(input.name);
   if (!row) {
     throw new Error(`Shortcut not found: ${input.name}`);
@@ -29,7 +29,7 @@ export const getShortcut = async (input: GetShortcutInput): Promise<ShortcutDeta
     }
   }
 
-  return {
+  const result: ShortcutDetail = {
     name: row.name,
     id: row.workflowId,
     folder: row.folder,
@@ -37,5 +37,9 @@ export const getShortcut = async (input: GetShortcutInput): Promise<ShortcutDeta
     last_modified: row.modifiedAt,
     actions: actionsList,
     input_types: inputTypes,
+  };
+
+  return {
+    content: [{ type: "text", text: JSON.stringify(result) }],
   };
 };

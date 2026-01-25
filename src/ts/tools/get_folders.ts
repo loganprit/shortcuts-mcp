@@ -1,6 +1,7 @@
-import { z } from "zod";
+import type { z } from "zod";
 
 import { getFolders as fetchFolders } from "../database.js";
+import type { McpToolResponse } from "../types.js";
 
 export const TOOL_NAME = "get_folders";
 
@@ -15,14 +16,16 @@ export type GetFoldersResult = {
   }>;
 };
 
-export const getFolders = async (
-  _input: GetFoldersInput,
-): Promise<GetFoldersResult> => {
+export const getFolders = async (_input: GetFoldersInput): Promise<McpToolResponse> => {
   const folders = await fetchFolders();
-  return {
+  const result: GetFoldersResult = {
     folders: folders.map((f) => ({
       name: f.name,
       shortcut_count: f.shortcutCount,
     })),
+  };
+
+  return {
+    content: [{ type: "text", text: JSON.stringify(result) }],
   };
 };

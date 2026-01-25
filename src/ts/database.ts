@@ -35,9 +35,7 @@ const normalizeUuid = (value: unknown): string | null => {
   }
   if (value instanceof Uint8Array) {
     if (value.byteLength === 16) {
-      const hex = Array.from(value, (byte) =>
-        byte.toString(16).padStart(2, "0"),
-      );
+      const hex = Array.from(value, (byte) => byte.toString(16).padStart(2, "0"));
       const parts = [
         hex.slice(0, 4).join(""),
         hex.slice(4, 6).join(""),
@@ -105,9 +103,7 @@ const asNumberOrNull = (value: unknown): number | null => {
   return Number.isNaN(parsed) ? null : parsed;
 };
 
-export const getAllShortcuts = async (
-  folder: string | null = null,
-): Promise<ShortcutRow[]> => {
+export const getAllShortcuts = async (folder: string | null = null): Promise<ShortcutRow[]> => {
   const query = `
     SELECT
       Z_PK AS pk,
@@ -136,9 +132,7 @@ export const getAllShortcuts = async (
   }
 };
 
-export const getShortcutByName = async (
-  name: string,
-): Promise<ShortcutRow | null> => {
+export const getShortcutByName = async (name: string): Promise<ShortcutRow | null> => {
   const query = `
     SELECT
       Z_PK AS pk,
@@ -171,9 +165,7 @@ export const getShortcutByName = async (
   }
 };
 
-export const getShortcutActions = async (
-  shortcutPk: number,
-): Promise<Uint8Array | null> => {
+export const getShortcutActions = async (shortcutPk: number): Promise<Uint8Array | null> => {
   const query = `
     SELECT ZDATA AS data
     FROM ZSHORTCUTACTIONS
@@ -183,9 +175,7 @@ export const getShortcutActions = async (
 
   const db = connect();
   try {
-    const row = db.query(query).get(shortcutPk) as
-      | Record<string, unknown>
-      | null;
+    const row = db.query(query).get(shortcutPk) as Record<string, unknown> | null;
     if (!row || row.data === null || row.data === undefined) {
       return null;
     }
@@ -233,9 +223,7 @@ export const getFolders = async (): Promise<FolderRow[]> => {
   }
 };
 
-export const searchShortcutsByName = async (
-  query: string,
-): Promise<ShortcutRow[]> => {
+export const searchShortcutsByName = async (query: string): Promise<ShortcutRow[]> => {
   const sql = `
     SELECT
       Z_PK AS pk,

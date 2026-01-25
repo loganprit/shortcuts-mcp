@@ -1,17 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-uv sync --all-extras --dev
-uv run pytest
-uv run basedpyright
-uv run ruff check
-uv run ruff format --check
+echo "Installing dependencies..."
+bun install
+
+echo "Running tests..."
+bun test
+
+echo "Running type check..."
+bun run typecheck
+
+echo "Running lint..."
+bun run lint
+
+echo "Checking format..."
+bun run format:check
 
 # Verify MCP server starts without import/initialization errors
 # The server will hang waiting for stdio input, so we timeout after 2 seconds.
-# If there are any errors (like Pydantic schema issues), they appear on stderr.
+# If there are any errors, they appear on stderr.
 echo "Testing MCP server startup..."
-if stderr=$(timeout 2 uv run shortcuts-mcp 2>&1 >/dev/null) || [ $? -eq 124 ]; then
+if stderr=$(timeout 2 bun run src/ts/index.ts 2>&1 >/dev/null) || [ $? -eq 124 ]; then
     # Exit code 124 means timeout (expected - server started successfully)
     # Any other success means unexpected early exit
     if [ -n "$stderr" ]; then
@@ -25,3 +34,6 @@ else
     echo "$stderr"
     exit 1
 fi
+
+echo ""
+echo "CI passed!"

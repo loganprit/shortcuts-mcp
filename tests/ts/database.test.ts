@@ -1,8 +1,8 @@
-import os from "node:os";
-import path from "node:path";
-import { mkdtemp, rm } from "node:fs/promises";
 import { Database } from "bun:sqlite";
 import { describe, expect, it } from "bun:test";
+import { mkdtemp, rm } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 import {
   getAllShortcuts,
@@ -67,10 +67,7 @@ const setupDatabase = async (): Promise<{
       );
     `);
 
-    const uuidBytes = Buffer.from(
-      "00112233445566778899aabbccddeeff",
-      "hex",
-    );
+    const uuidBytes = Buffer.from("00112233445566778899aabbccddeeff", "hex");
 
     db.run(
       `
@@ -114,18 +111,14 @@ describe("database access", () => {
     const { dbPath, cleanup } = await setupDatabase();
 
     try {
-      const shortcuts = await withEnv("SHORTCUTS_DB_PATH", dbPath, () =>
-        getAllShortcuts(),
-      );
+      const shortcuts = await withEnv("SHORTCUTS_DB_PATH", dbPath, () => getAllShortcuts());
 
       expect(shortcuts).toHaveLength(2);
       expect(shortcuts[0]?.name).toBe("Alpha");
       expect(shortcuts[1]?.name).toBe("beta");
       expect(shortcuts[0]?.modifiedAt).toBe("2001-01-01T00:00:00+00:00");
       expect(shortcuts[1]?.modifiedAt).toBe("2001-01-02T00:00:00+00:00");
-      expect(shortcuts[0]?.workflowId).toBe(
-        "00112233-4455-6677-8899-aabbccddeeff",
-      );
+      expect(shortcuts[0]?.workflowId).toBe("00112233-4455-6677-8899-aabbccddeeff");
       expect(shortcuts[1]?.workflowId).toBeNull();
     } finally {
       await cleanup();
@@ -136,9 +129,7 @@ describe("database access", () => {
     const { dbPath, cleanup } = await setupDatabase();
 
     try {
-      const shortcut = await withEnv("SHORTCUTS_DB_PATH", dbPath, () =>
-        getShortcutByName("beta"),
-      );
+      const shortcut = await withEnv("SHORTCUTS_DB_PATH", dbPath, () => getShortcutByName("beta"));
       expect(shortcut?.actionCount).toBe(2);
 
       const missing = await withEnv("SHORTCUTS_DB_PATH", dbPath, () =>
@@ -154,15 +145,11 @@ describe("database access", () => {
     const { dbPath, cleanup } = await setupDatabase();
 
     try {
-      const data = await withEnv("SHORTCUTS_DB_PATH", dbPath, () =>
-        getShortcutActions(1),
-      );
+      const data = await withEnv("SHORTCUTS_DB_PATH", dbPath, () => getShortcutActions(1));
       expect(data).toBeInstanceOf(Uint8Array);
       expect(Array.from(data ?? [])).toEqual([1, 2, 3]);
 
-      const missing = await withEnv("SHORTCUTS_DB_PATH", dbPath, () =>
-        getShortcutActions(999),
-      );
+      const missing = await withEnv("SHORTCUTS_DB_PATH", dbPath, () => getShortcutActions(999));
       expect(missing).toBeNull();
     } finally {
       await cleanup();
@@ -173,9 +160,7 @@ describe("database access", () => {
     const { dbPath, cleanup } = await setupDatabase();
 
     try {
-      const folders = await withEnv("SHORTCUTS_DB_PATH", dbPath, () =>
-        getFolders(),
-      );
+      const folders = await withEnv("SHORTCUTS_DB_PATH", dbPath, () => getFolders());
       expect(folders).toEqual([
         { name: "Root", shortcutCount: 0 },
         { name: "Share Sheet", shortcutCount: 0 },
@@ -189,9 +174,7 @@ describe("database access", () => {
     const { dbPath, cleanup } = await setupDatabase();
 
     try {
-      const results = await withEnv("SHORTCUTS_DB_PATH", dbPath, () =>
-        searchShortcutsByName("et"),
-      );
+      const results = await withEnv("SHORTCUTS_DB_PATH", dbPath, () => searchShortcutsByName("et"));
       expect(results).toHaveLength(1);
       expect(results[0]?.name).toBe("beta");
     } finally {

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { getAllShortcuts, getShortcutActions } from "../database.js";
 import { actionTypes, parseActions } from "../parser.js";
-import type { ShortcutMetadata } from "../types.js";
+import type { McpToolResponse, ShortcutMetadata } from "../types.js";
 
 export const TOOL_NAME = "list_shortcuts";
 
@@ -13,9 +13,7 @@ export const INPUT_SCHEMA = {
 
 export type ListShortcutsInput = z.infer<z.ZodObject<typeof INPUT_SCHEMA>>;
 
-export const listShortcuts = async (
-  input: ListShortcutsInput,
-): Promise<{ shortcuts: ShortcutMetadata[] }> => {
+export const listShortcuts = async (input: ListShortcutsInput): Promise<McpToolResponse> => {
   const rows = await getAllShortcuts(input.folder ?? null);
   const shortcuts: ShortcutMetadata[] = [];
 
@@ -39,5 +37,7 @@ export const listShortcuts = async (
     });
   }
 
-  return { shortcuts };
+  return {
+    content: [{ type: "text", text: JSON.stringify({ shortcuts }) }],
+  };
 };

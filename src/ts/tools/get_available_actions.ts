@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { catalog } from "../actions.js";
-import type { ActionInfo } from "../types.js";
+import type { ActionInfo, McpToolResponse } from "../types.js";
 
 export const TOOL_NAME = "get_available_actions";
 
@@ -16,14 +16,16 @@ export const INPUT_SCHEMA = {
 
 export type GetAvailableActionsInput = z.infer<z.ZodObject<typeof INPUT_SCHEMA>>;
 
-export const getAvailableActions = async (
-  input: GetAvailableActionsInput,
-): Promise<{
+export type GetAvailableActionsResult = {
   actions: ActionInfo[];
   categories: string[];
   sources: Record<string, number>;
   cached: boolean;
-}> => {
+};
+
+export const getAvailableActions = async (
+  input: GetAvailableActionsInput,
+): Promise<McpToolResponse> => {
   const { actions, cached } = await catalog.getAllActions({
     source: input.source,
     category: input.category,
@@ -59,10 +61,14 @@ export const getAvailableActions = async (
 
   const categories = Array.from(categoriesSet).sort();
 
-  return {
+  const result: GetAvailableActionsResult = {
     actions: trimmed,
     categories,
     sources,
     cached,
+  };
+
+  return {
+    content: [{ type: "text", text: JSON.stringify(result) }],
   };
 };

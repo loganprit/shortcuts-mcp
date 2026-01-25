@@ -1,9 +1,14 @@
 export type JsonPrimitive = string | number | boolean | null;
 
-export type JsonValue =
-  | JsonPrimitive
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
+
+/**
+ * MCP tool response format required by the SDK.
+ * Tools must return content as an array of typed content blocks.
+ */
+export type McpToolResponse = {
+  content: Array<{ type: "text"; text: string }>;
+};
 
 export type ShortcutAction = {
   identifier: string;

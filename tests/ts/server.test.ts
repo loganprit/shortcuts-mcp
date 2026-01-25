@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { describe, expect, it } from "bun:test";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 import { createServer, startServer } from "../../src/ts/index.js";
 

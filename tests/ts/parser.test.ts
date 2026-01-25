@@ -53,10 +53,7 @@ describe("plist parser", () => {
   it("deduplicates action identifiers for action types", () => {
     const actions = parseActions(samplePlist());
     const types = actionTypes(actions);
-    expect(types).toEqual([
-      "is.workflow.actions.delay",
-      "is.workflow.actions.comment",
-    ]);
+    expect(types).toEqual(["is.workflow.actions.delay", "is.workflow.actions.comment"]);
   });
 
   it("extracts input types", () => {

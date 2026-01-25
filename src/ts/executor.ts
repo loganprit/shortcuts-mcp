@@ -1,4 +1,4 @@
-import { type JsonValue } from "./types.js";
+import type { JsonValue } from "./types.js";
 
 export type CommandResult = {
   stdout: string;
@@ -22,9 +22,7 @@ export type RunResult = {
   returncode: number;
 };
 
-const readStream = async (
-  stream: ReadableStream<Uint8Array> | null,
-): Promise<string> => {
+const readStream = async (stream: ReadableStream<Uint8Array> | null): Promise<string> => {
   if (!stream) {
     return "";
   }
@@ -32,11 +30,7 @@ const readStream = async (
   return response.text();
 };
 
-const runCommand: CommandRunner = async (
-  command,
-  args,
-  options = {},
-): Promise<CommandResult> => {
+const runCommand: CommandRunner = async (command, args, options = {}): Promise<CommandResult> => {
   const subprocess = Bun.spawn([command, ...args], {
     stdout: "pipe",
     stderr: "pipe",
@@ -84,28 +78,20 @@ export const applescriptLiteral = (value: string): string => {
   return JSON.stringify(value);
 };
 
-export const buildApplescript = (
-  name: string,
-  inputValue: JsonValue | null,
-): string => {
+export const buildApplescript = (name: string, inputValue: JsonValue | null): string => {
   const nameLiteral = applescriptLiteral(name);
   const script = ['tell application "Shortcuts Events"'];
   if (inputValue === null) {
     script.push(`    run the shortcut named ${nameLiteral}`);
   } else {
     const inputLiteral = applescriptLiteral(stringifyInput(inputValue));
-    script.push(
-      `    run the shortcut named ${nameLiteral} with input ${inputLiteral}`,
-    );
+    script.push(`    run the shortcut named ${nameLiteral} with input ${inputLiteral}`);
   }
   script.push("end tell");
   return script.join("\n");
 };
 
-export const buildShortcutUrl = (
-  name: string,
-  inputValue: JsonValue | null,
-): string => {
+export const buildShortcutUrl = (name: string, inputValue: JsonValue | null): string => {
   let url = `shortcuts://run-shortcut?name=${encodeURIComponent(name)}`;
   if (inputValue !== null) {
     url += `&input=${encodeURIComponent(stringifyInput(inputValue))}`;
@@ -122,11 +108,7 @@ export const runViaApplescript = async (
   const start = performance.now();
   const script = buildApplescript(name, inputValue);
   const timeoutMs = timeoutSeconds === null ? null : timeoutSeconds * 1000;
-  const { stdout, stderr, exitCode } = await runner(
-    "osascript",
-    ["-e", script],
-    { timeoutMs },
-  );
+  const { stdout, stderr, exitCode } = await runner("osascript", ["-e", script], { timeoutMs });
   const trimmedStdout = stdout.trim();
   const trimmedStderr = stderr.trim();
   let output = trimmedStdout;
@@ -152,8 +134,7 @@ export const runViaUrlScheme = async (
   if (exitCode !== 0) {
     const trimmedStderr = stderr.trim();
     const trimmedStdout = stdout.trim();
-    const message =
-      trimmedStderr || trimmedStdout || `open returned ${exitCode}`;
+    const message = trimmedStderr || trimmedStdout || `open returned ${exitCode}`;
     throw new Error(message);
   }
 };
