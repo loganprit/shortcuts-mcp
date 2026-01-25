@@ -17,7 +17,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 ### Phase 1: Bun + TypeScript Scaffold
 
 - [x] Task 1.1 - Initialize Bun project and TS config for MCP server
-- [ ] Task 1.2 - Define TS project layout (entrypoint, server, tool modules)
+- [x] Task 1.2 - Define TS project layout (entrypoint, server, tool modules)
 - [ ] Task 1.3 - Add base lint/typecheck/test tooling for TS (Bun-friendly)
 
 ### Phase 2: Port Core Logic
@@ -48,10 +48,11 @@ as the runtime/package manager, with stdio transport and full tool parity.
 |------|-----------|-------|
 | Task 0.1 | 1 | Added migration spec with scope and acceptance checks |
 | Task 0.2 | 2 | Documented tool inputs/outputs parity checklist |
+| Task 1.2 | 3 | Added TS entrypoint, server, and tool module skeletons |
 
 ## Current Focus
 
-**Next Task:** Task 1.2
+**Next Task:** Task 1.3
 **Blockers:** None
 
 ## Bugs
