@@ -38,7 +38,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 
 - [x] Task 4.1 - Replace pytest coverage with Bun tests for parser/actions
 - [x] Task 4.2 - Add parity validation checklist/runbook for local stdio checks
-- [ ] Task 4.3 - Update README for Bun stdio server
+- [x] Task 4.3 - Update README for Bun stdio server
 - [ ] Task 4.4 - Update scripts/ci.sh for Bun lint/typecheck/test
 - [ ] Task 4.5 - Remove Python implementation after parity verification
 - [ ] Task 4.6 - Move /ts to /src and finalize project structure
@@ -61,10 +61,11 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 3.3 | 12 | Implemented tool logic and mapped responses to Python shapes |
 | Task 4.1 | 13 | Ported parser and actions tests to Bun with high coverage |
 | Task 4.2 | 14 | Added parity validation runbook with stdio test commands |
+| Task 4.3 | 15 | Updated README for Bun stdio server with setup, tools, and integration docs |
 
 ## Current Focus
 
-**Next Task:** Task 4.3
+**Next Task:** Task 4.4
 **Blockers:** None
 
 ## Bugs
