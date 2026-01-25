@@ -7,10 +7,12 @@
       "description": "Tests if a condition is true, and if so, runs the contained actions.",
       "category": "control-flow",
       "parameters": [
-        {"name": "WFCondition", "title": "Condition", "value_type": "enum", "is_optional": false},
+        {"name": "WFCondition", "title": "Condition", "value_type": "enum", "is_optional": false, "description": "Condition type: 0=Contains, 1=DoesNotContain, 2=GreaterThan, 3=GreaterThanOrEqual, 4=LessThan, 5=LessThanOrEqual, 100=HasValue, 101=HasNoValue"},
         {"name": "WFConditionalActionString", "title": "Value", "value_type": "string", "is_optional": true},
-        {"name": "WFAnotherNumber", "title": "Number", "value_type": "number", "is_optional": true},
-        {"name": "GroupingIdentifier", "title": "Group ID", "value_type": "string", "is_optional": false}
+        {"name": "WFNumberValue", "title": "Number Value", "value_type": "number", "is_optional": true, "description": "Comparison value for numeric conditions"},
+        {"name": "WFInput", "title": "Input", "value_type": "any", "is_optional": true, "description": "Value to test the condition against"},
+        {"name": "GroupingIdentifier", "title": "Group ID", "value_type": "string", "is_optional": false, "description": "UUID that links If/Otherwise/EndIf actions together"},
+        {"name": "WFControlFlowMode", "title": "Control Flow Mode", "value_type": "number", "is_optional": false, "description": "0=If (start), 1=Otherwise (middle), 2=EndIf (end)"}
       ]
     },
     "is.workflow.actions.setvariable": {
@@ -102,9 +104,11 @@
       "description": "Presents a menu of options and runs different actions based on which was chosen.",
       "category": "control-flow",
       "parameters": [
-        {"name": "WFMenuItems", "title": "Menu Items", "value_type": "list", "is_optional": false},
-        {"name": "WFMenuItemTitle", "title": "Menu Item Title", "value_type": "string", "is_optional": true},
-        {"name": "GroupingIdentifier", "title": "Group ID", "value_type": "string", "is_optional": false}
+        {"name": "WFMenuItems", "title": "Menu Items", "value_type": "list", "is_optional": true, "description": "List of menu option strings (only needed for mode 0)"},
+        {"name": "WFMenuItemTitle", "title": "Menu Item Title", "value_type": "string", "is_optional": true, "description": "Title for a menu item section (used in mode 1)"},
+        {"name": "WFMenuPrompt", "title": "Prompt", "value_type": "string", "is_optional": true, "description": "Prompt shown to user"},
+        {"name": "GroupingIdentifier", "title": "Group ID", "value_type": "string", "is_optional": false, "description": "UUID that links menu start/items/end together"},
+        {"name": "WFControlFlowMode", "title": "Control Flow Mode", "value_type": "number", "is_optional": false, "description": "0=Menu (start), 1=MenuItem (for each option), 2=EndMenu (end)"}
       ]
     },
     "is.workflow.actions.choosefromlist": {
@@ -123,8 +127,9 @@
       "description": "Repeats the contained actions once for each item in the input list.",
       "category": "control-flow",
       "parameters": [
-        {"name": "WFInput", "title": "Input", "value_type": "list", "is_optional": false},
-        {"name": "GroupingIdentifier", "title": "Group ID", "value_type": "string", "is_optional": false}
+        {"name": "WFInput", "title": "Input", "value_type": "list", "is_optional": true, "description": "List to iterate over (only needed for mode 0)"},
+        {"name": "GroupingIdentifier", "title": "Group ID", "value_type": "string", "is_optional": false, "description": "UUID that links repeat start/end together"},
+        {"name": "WFControlFlowMode", "title": "Control Flow Mode", "value_type": "number", "is_optional": false, "description": "0=Repeat (start), 2=EndRepeat (end)"}
       ]
     },
     "is.workflow.actions.repeat.count": {
@@ -132,8 +137,9 @@
       "description": "Repeats the contained actions a specified number of times.",
       "category": "control-flow",
       "parameters": [
-        {"name": "WFRepeatCount", "title": "Count", "value_type": "number", "is_optional": false},
-        {"name": "GroupingIdentifier", "title": "Group ID", "value_type": "string", "is_optional": false}
+        {"name": "WFRepeatCount", "title": "Count", "value_type": "number", "is_optional": true, "description": "Number of times to repeat (only needed for mode 0)"},
+        {"name": "GroupingIdentifier", "title": "Group ID", "value_type": "string", "is_optional": false, "description": "UUID that links repeat start/end together"},
+        {"name": "WFControlFlowMode", "title": "Control Flow Mode", "value_type": "number", "is_optional": false, "description": "0=Repeat (start), 2=EndRepeat (end)"}
       ]
     },
     "is.workflow.actions.exit": {

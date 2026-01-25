@@ -44,6 +44,29 @@ SearchIn = Literal["name", "actions", "both"]
 
 ActionSource = Literal["system", "apps", "library", "curated"]
 
+IconColor = Literal[
+    "red",
+    "dark_orange",
+    "orange",
+    "yellow",
+    "green",
+    "teal",
+    "light_blue",
+    "blue",
+    "dark_blue",
+    "violet",
+    "purple",
+    "dark_gray",
+    "pink",
+    "taupe",
+    "gray",
+]
+
+
+class ShortcutIcon(BaseModel):
+    glyph_number: int
+    color: IconColor
+
 
 class ActionParameter(BaseModel):
     name: str
@@ -63,3 +86,26 @@ class ActionInfo(BaseModel):
     platform_availability: dict[str, str] | None = None
     usage_count: int = 0
     example_params: dict[str, object] | None = None
+
+
+class CreateShortcutResult(BaseModel):
+    """Result from creating a shortcut."""
+
+    success: bool
+    name: str
+    """The requested/resolved name for the shortcut."""
+
+    imported_name: str | None = None
+    """The actual name after import (may differ if " signed" suffix was added)."""
+
+    file_path: str
+    """Path to the signed shortcut file."""
+
+    import_attempted: bool
+    """Whether import was attempted."""
+
+    import_confirmed: bool | None = None
+    """Whether import was confirmed via database check. None if not checked."""
+
+    warnings: list[str] = Field(default_factory=list)
+    """Any warnings generated during creation or validation."""
