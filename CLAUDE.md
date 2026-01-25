@@ -5,35 +5,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-uv run shortcuts-mcp          # Run the MCP server locally
-uv run pytest                 # Run all tests
-uv run pytest tests/test_parser.py -k test_parse_actions  # Run a single test
-uv run basedpyright           # Type checking (strict mode)
-uv run ruff check             # Lint code
-uv run ruff format            # Format code
-uv run ruff format --check    # Check formatting without modifying
+bun run src/ts/index.ts       # Run the MCP server locally
+bun test                      # Run all tests
+bun test tests/ts/parser.test.ts  # Run a single test file
+bun run typecheck             # Type checking (tsc strict mode)
+bun run lint                  # Lint code (Biome)
+bun run format                # Format code (Biome)
+bun run format:check          # Check formatting without modifying
 scripts/ci.sh                 # Run full CI suite locally
 ```
 
 ## Architecture
 
-Python MCP server for macOS Shortcuts with read-only database access and two execution modes.
+TypeScript MCP server for macOS Shortcuts with read-only database access and two execution modes.
 
 ### Module Layout
 
-- **server.py** - FastMCP tool definitions and entrypoint (`main()`). Tools: `list_shortcuts`, `get_shortcut`, `search_shortcuts`, `get_folders`, `run_shortcut`
-- **database.py** - Async SQLite queries via aiosqlite. Read-only connection to `~/Library/Shortcuts/Shortcuts.sqlite`. Handles Cocoa epoch timestamps and UUID normalization
-- **executor.py** - Two execution strategies:
-  - `run_via_applescript()` - Synchronous execution with output capture and exit code via osascript
-  - `run_via_url_scheme()` - Asynchronous execution via `shortcuts://` URL scheme with optional timeout
-- **parser.py** - Parses binary plist blobs (shortcut action data) using `plistlib`. Extracts `WFWorkflowActions` and `WFWorkflowInputContentItemClasses`
-- **models.py** - Pydantic models for API responses (`ShortcutMetadata`, `ShortcutDetail`, `RunResult`, `ShortcutAction`)
-- **config.py** - Environment variable handling for `SHORTCUTS_DB_PATH`, `SHORTCUTS_DEFAULT_TIMEOUT`, `SHORTCUTS_LOG_LEVEL`
-- **types.py** - Type aliases for JSON data structures (`JsonPrimitive`, `JsonValue`). Used throughout the codebase to avoid `Any` types
+- **index.ts** - Entrypoint that starts the MCP server with stdio transport
+- **server.ts** - MCP server setup using `@modelcontextprotocol/sdk`. Registers all tools
+- **database.ts** - SQLite queries via `bun:sqlite`. Read-only connection to `~/Library/Shortcuts/Shortcuts.sqlite`. Handles Cocoa epoch timestamps and UUID normalization
+- **executor.ts** - Two execution strategies:
+  - `runViaAppleScript()` - Synchronous execution with output capture via osascript
+  - `runViaUrlScheme()` - Asynchronous execution via `shortcuts://` URL scheme with optional timeout
+- **parser.ts** - Parses binary plist blobs (shortcut action data). Extracts `WFWorkflowActions` and `WFWorkflowInputContentItemClasses`
+- **actions.ts** - Action catalog discovery from system frameworks, apps, and user's shortcut library
+- **config.ts** - Environment variable handling for `SHORTCUTS_DB_PATH`, `SHORTCUTS_DEFAULT_TIMEOUT`, `SHORTCUTS_LOG_LEVEL`
+- **types.ts** - Type aliases for JSON data structures (`JsonPrimitive`, `JsonValue`). Used throughout to avoid `any` types
+- **tools/** - Individual MCP tool implementations with Zod schemas
 
 ### Data Flow
 
-1. MCP tool receives request → 2. `database.py` queries SQLite → 3. `parser.py` deserializes action plist blobs → 4. `models.py` structures response → 5. (for `run_shortcut`) `executor.py` runs via AppleScript or URL scheme
+1. MCP tool receives request → 2. `database.ts` queries SQLite → 3. `parser.ts` deserializes action plist blobs → 4. Tool handler structures response → 5. (for `run_shortcut`) `executor.ts` runs via AppleScript or URL scheme
 
 ## Environment Variables
 
@@ -45,19 +47,19 @@ SHORTCUTS_LOG_LEVEL="INFO"
 
 ## Key Implementation Details
 
-- Database connection is always read-only (`?mode=ro` URI parameter)
-- Cocoa epoch (2001-01-01) used for timestamp conversion in database.py
-- Shortcut UUIDs may be stored as 16-byte blobs or strings; `_normalize_uuid()` handles both
+- Database connection is always read-only (`readonly: true` in Bun sqlite)
+- Cocoa epoch (2001-01-01) used for timestamp conversion in database.ts
+- Shortcut UUIDs may be stored as 16-byte blobs or strings; `normalizeUuid()` handles both
 - Action data stored as binary plist in `ZSHORTCUTACTIONS.ZDATA` column
 - Plist parsing handles two formats: direct list of actions OR dict-wrapped with `WFWorkflowActions` key
-- Type checking is strict mode (`basedpyright` with `typeCheckingMode = "strict"`)
-- Python 3.10+ required for type alias syntax and modern typing features
+- Type checking uses strict mode via `tsc`
+- Tool handlers must return `{ content: [{ type: "text", text: JSON.stringify(...) }] }` format per MCP SDK
 
 ## btca
 
 When you need up-to-date information about technologies used in this project, use btca to query source repositories directly.
 
-**Available resources**: zod, typescript, bun, modelContextProtocol, pydantic, biome, pytest, gemini
+**Available resources**: zod, typescript, bun, modelContextProtocol, biome
 
 ### Usage
 
@@ -74,12 +76,12 @@ btca ask -r zod -r typescript -q "How do I use Zod with TypeScript for runtime v
 ### Examples
 
 ```bash
-# Query MCP Python SDK for implementation details
-btca ask -r modelContextProtocol -q "How do I create a custom MCP tool with async handlers?"
+# Query MCP TypeScript SDK for implementation details
+btca ask -r modelContextProtocol -q "How do I create a custom MCP tool with Zod schemas?"
 
-# Query Gemini CLI for troubleshooting terminal output
-btca ask -r gemini -q "Why aren't agent responses showing in terminal output?"
+# Query Bun for runtime-specific features
+btca ask -r bun -q "How do I use bun:sqlite for read-only database access?"
 
-# Query multiple testing frameworks
-btca ask -r pytest -r pydantic -q "How to validate async test fixtures with Pydantic models?"
+# Query Biome for linting configuration
+btca ask -r biome -q "How do I configure Biome for TypeScript strict mode?"
 ```

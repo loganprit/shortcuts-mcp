@@ -40,7 +40,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 - [x] Task 4.2 - Add parity validation checklist/runbook for local stdio checks
 - [x] Task 4.3 - Update README for Bun stdio server
 - [x] Task 4.4 - Update scripts/ci.sh for Bun lint/typecheck/test
-- [ ] Task 4.5 - Remove Python implementation after parity verification
+- [x] Task 4.5 - Remove Python implementation after parity verification
 - [ ] Task 4.6 - Move /ts to /src and finalize project structure
 
 ## Completed Tasks
@@ -63,11 +63,12 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 4.2 | 14 | Added parity validation runbook with stdio test commands |
 | Task 4.3 | 15 | Updated README for Bun stdio server with setup, tools, and integration docs |
 | Task 4.4 | 16 | Updated scripts/ci.sh to use Bun commands (test, typecheck, lint, format:check, server startup) |
+| Task 4.5 | 17 | Removed Python implementation (src/shortcuts_mcp, pyproject.toml, uv.lock, Python tests) and updated CLAUDE.md + btca.config.jsonc |
 
 ## Current Focus
 
-**Next Task:** Task 4.5
-**Blockers:** None - all P0 bugs fixed
+**Next Task:** Task 4.6
+**Blockers:** None
 
 ## Bugs
 

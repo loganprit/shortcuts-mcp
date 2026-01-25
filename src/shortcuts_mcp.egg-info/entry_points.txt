@@ -1,2 +1,0 @@
-[console_scripts]
-shortcuts-mcp = shortcuts_mcp.server:main
