@@ -126,11 +126,11 @@ export const deriveCategory = (identifier: string, fqtn: string | null): string 
   if (identifier.startsWith("com.apple.ShortcutsActions.")) {
     return "apple.shortcuts";
   }
-  if (identifier.startsWith("com.apple.")) {
-    return "apple.system";
-  }
   if (fqtn && fqtn.startsWith("ShortcutsActions.")) {
     return "apple.shortcuts";
+  }
+  if (identifier.startsWith("com.apple.")) {
+    return "apple.system";
   }
   return "third-party";
 };

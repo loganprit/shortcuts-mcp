@@ -29,8 +29,9 @@ while [[ $ITERATION -lt $MAX_ITERATIONS ]]; do
     echo " Iteration $ITERATION / $MAX_ITERATIONS (mode: $MODE)"
     echo "═══════════════════════════════════════════"
 
-    # Run Gemini CLI in headless mode
-    gemini < "$PROMPT_FILE"
+    # Run Gemini CLI in headless mode with tools enabled
+    # Using pipe instead of -p flag for better output handling
+    cat "$PROMPT_FILE" | gemini --approval-mode=yolo
 
     # Run CI validation (build mode only)
     if [[ "$MODE" == "build" ]]; then

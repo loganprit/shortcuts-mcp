@@ -32,7 +32,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 
 - [x] Task 3.1 - Implement McpServer with stdio transport
 - [x] Task 3.2 - Register tools with Zod schemas matching current behavior
-- [ ] Task 3.3 - Map tool responses to match Python output shapes
+- [x] Task 3.3 - Map tool responses to match Python output shapes
 
 ### Phase 4: Tests, Docs, Cleanup
 
@@ -58,10 +58,11 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 2.5 | 9 | Added execution helpers and Bun tests for run_shortcut |
 | Task 3.1 | 10 | Added MCP server bootstrap with stdio transport |
 | Task 3.2 | 11 | Registered MCP tools with Zod input schemas |
+| Task 3.3 | 12 | Implemented tool logic and mapped responses to Python shapes |
 
 ## Current Focus
 
-**Next Task:** Task 3.3
+**Next Task:** Task 4.1
 **Blockers:** None
 
 ## Bugs

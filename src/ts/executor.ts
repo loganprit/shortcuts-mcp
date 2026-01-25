@@ -116,11 +116,17 @@ export const buildShortcutUrl = (
 export const runViaApplescript = async (
   name: string,
   inputValue: JsonValue | null = null,
+  timeoutSeconds: number | null = null,
   runner: CommandRunner = runCommand,
 ): Promise<RunResult> => {
   const start = performance.now();
   const script = buildApplescript(name, inputValue);
-  const { stdout, stderr, exitCode } = await runner("osascript", ["-e", script]);
+  const timeoutMs = timeoutSeconds === null ? null : timeoutSeconds * 1000;
+  const { stdout, stderr, exitCode } = await runner(
+    "osascript",
+    ["-e", script],
+    { timeoutMs },
+  );
   const trimmedStdout = stdout.trim();
   const trimmedStderr = stderr.trim();
   let output = trimmedStdout;

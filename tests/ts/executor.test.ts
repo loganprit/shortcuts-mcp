@@ -34,7 +34,7 @@ describe("executor helpers", () => {
       foo: "bar",
     });
     expect(scriptWithInput).toContain("with input");
-    expect(scriptWithInput).toContain('"{"foo":"bar"}"');
+    expect(scriptWithInput).toContain('"{\\"foo\\":\\"bar\\"}"');
   });
 
   it("builds the shortcuts URL scheme", () => {
@@ -56,7 +56,7 @@ describe("executor commands", () => {
       return { stdout: "ok\n", stderr: "warn\n", exitCode: 0 };
     };
 
-    const result = await runViaApplescript("Test", "input", runner);
+    const result = await runViaApplescript("Test", "input", null, runner);
     expect(calls).toHaveLength(1);
     expect(calls[0]?.command).toBe("osascript");
     expect(calls[0]?.args[0]).toBe("-e");
@@ -120,7 +120,7 @@ describe("executor commands", () => {
     };
 
     const inputValue: JsonValue = { count: 2 };
-    await runViaApplescript("Test", inputValue, runner);
+    await runViaApplescript("Test", inputValue, null, runner);
     expect(capturedScript).toContain('"{\\"count\\":2}"');
   });
 });

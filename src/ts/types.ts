@@ -10,6 +10,25 @@ export type ShortcutAction = {
   parameters: Record<string, JsonValue>;
 };
 
+export type ShortcutMetadata = {
+  name: string;
+  id: string | null;
+  folder: string | null;
+  action_count: number | null;
+  last_modified: string | null;
+  action_types?: string[] | null;
+};
+
+export type ShortcutDetail = {
+  name: string;
+  id: string | null;
+  folder: string | null;
+  action_count: number | null;
+  last_modified: string | null;
+  actions: ShortcutAction[] | null;
+  input_types: string[] | null;
+};
+
 export type ActionSource = "system" | "apps" | "library" | "curated";
 
 export type ActionParameter = {
