@@ -12,7 +12,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 ### Phase 0: Specs and Success Criteria
 
 - [x] Task 0.1 - Create migration spec with goals, scope, and acceptance checks
-- [ ] Task 0.2 - Inventory current Python tool inputs/outputs for parity checklist
+- [x] Task 0.2 - Inventory current Python tool inputs/outputs for parity checklist
 
 ### Phase 1: Bun + TypeScript Scaffold
 
@@ -47,10 +47,11 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task | Iteration | Notes |
 |------|-----------|-------|
 | Task 0.1 | 1 | Added migration spec with scope and acceptance checks |
+| Task 0.2 | 2 | Documented tool inputs/outputs parity checklist |
 
 ## Current Focus
 
-**Next Task:** Task 0.2
+**Next Task:** Task 1.1
 **Blockers:** None
 
 ## Bugs
