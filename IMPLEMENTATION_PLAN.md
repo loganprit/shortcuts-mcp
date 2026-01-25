@@ -16,7 +16,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 
 ### Phase 1: Bun + TypeScript Scaffold
 
-- [ ] Task 1.1 - Initialize Bun project and TS config for MCP server
+- [x] Task 1.1 - Initialize Bun project and TS config for MCP server
 - [ ] Task 1.2 - Define TS project layout (entrypoint, server, tool modules)
 - [ ] Task 1.3 - Add base lint/typecheck/test tooling for TS (Bun-friendly)
 
@@ -51,7 +51,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 
 ## Current Focus
 
-**Next Task:** Task 1.1
+**Next Task:** Task 1.2
 **Blockers:** None
 
 ## Bugs
