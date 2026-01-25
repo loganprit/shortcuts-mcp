@@ -34,3 +34,23 @@
 - Default Shortcuts DB path: `SHORTCUTS_DB_PATH=~/Library/Shortcuts/Shortcuts.sqlite`.
 - Optional env vars: `SHORTCUTS_DEFAULT_TIMEOUT` (seconds), `SHORTCUTS_LOG_LEVEL`.
 - macOS-specific project due to AppleScript/Shortcuts integration.
+
+## Ralph Wiggum Loop Operations
+
+When operating within the Ralph loop:
+
+### Iteration Discipline
+- Complete ONE task per iteration
+- Always read IMPLEMENTATION_PLAN.md first
+- Update IMPLEMENTATION_PLAN.md before finishing
+- Run full validation via scripts/ci.sh
+
+### Plan Updates
+- Mark completed tasks with [x]
+- Document bugs immediately with priority
+- Set STATUS: COMPLETE when all tasks done
+
+### Validation Flow
+1. Implement code changes
+2. Run `scripts/ci.sh` (pytest + basedpyright + ruff)
+3. Fix any failures before completing iteration
