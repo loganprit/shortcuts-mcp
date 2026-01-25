@@ -30,7 +30,7 @@ as the runtime/package manager, with stdio transport and full tool parity.
 
 ### Phase 3: MCP Server + Tools
 
-- [ ] Task 3.1 - Implement McpServer with stdio transport
+- [x] Task 3.1 - Implement McpServer with stdio transport
 - [ ] Task 3.2 - Register tools with Zod schemas matching current behavior
 - [ ] Task 3.3 - Map tool responses to match Python output shapes
 
@@ -56,10 +56,11 @@ as the runtime/package manager, with stdio transport and full tool parity.
 | Task 2.3 | 7 | Ported plist parsing + action extraction with Bun tests |
 | Task 2.4 | 8 | Ported action catalog discovery with Bun tests |
 | Task 2.5 | 9 | Added execution helpers and Bun tests for run_shortcut |
+| Task 3.1 | 10 | Added MCP server bootstrap with stdio transport |
 
 ## Current Focus
 
-**Next Task:** Task 3.1
+**Next Task:** Task 3.2
 **Blockers:** None
 
 ## Bugs

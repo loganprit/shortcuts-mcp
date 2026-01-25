@@ -1,3 +1,6 @@
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
 import {
   getAvailableActions,
   getFolders,
@@ -18,7 +21,17 @@ const TOOL_HANDLERS: Record<string, ToolHandler> = {
   run_shortcut: runShortcut,
 };
 
-export const createServer = (): void => {
+const SERVER_NAME = "Shortcuts MCP";
+const SERVER_VERSION = "0.0.0";
+
+export const createServer = (): McpServer => {
   void TOOL_HANDLERS;
-  // TODO: Implement MCP server wiring in Task 3.1.
+  return new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
+};
+
+export const startServer = async (): Promise<McpServer> => {
+  const server = createServer();
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  return server;
 };
