@@ -31,6 +31,7 @@ from .models import (
     SearchIn,
     ShortcutAction,
     ShortcutDetail,
+    ShortcutIcon,
     ShortcutMetadata,
 )
 from .parser import action_search_blob, action_types, parse_actions, parse_input_types
@@ -240,6 +241,7 @@ async def create_shortcut(
     name: str,
     actions: list[ShortcutAction],
     input_types: list[str] | None = None,
+    icon: ShortcutIcon | None = None,
     validate: bool = True,
     install: bool = True,
     sign_mode: Literal["anyone", "people-who-know-me"] = "anyone",
@@ -282,6 +284,7 @@ async def create_shortcut(
         resolved_name,
         actions,
         input_types=input_types,
+        icon=icon,
     )
     unsigned_path.write_bytes(payload)
     await sign_shortcut_file(str(unsigned_path), str(signed_temp_path), sign_mode)

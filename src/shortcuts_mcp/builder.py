@@ -5,13 +5,31 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable, cast
 
-from .models import ShortcutAction
+from .models import ShortcutAction, ShortcutIcon
 from .references import transform_references
 
 SHORTCUTS_INFO_PLIST = Path("/System/Applications/Shortcuts.app/Contents/Info.plist")
 
 _client_info: tuple[str | None, str | None] | None = None
 _DROP = object()
+
+ICON_COLOR_VALUES: dict[str, int] = {
+    "red": 4282601983,
+    "dark_orange": 4251333119,
+    "orange": 4271458815,
+    "yellow": 4274264319,
+    "green": 4292093695,
+    "teal": 431817727,
+    "light_blue": 1440408063,
+    "blue": 463140863,
+    "dark_blue": 946986751,
+    "violet": 2071128575,
+    "purple": 3679049983,
+    "dark_gray": 255,
+    "pink": 3980825855,
+    "taupe": 3031607807,
+    "gray": 2846468607,
+}
 
 
 def get_shortcuts_client_info(
@@ -44,6 +62,7 @@ def build_workflow_payload(
     name: str,
     actions: Iterable[ShortcutAction],
     input_types: list[str] | None = None,
+    icon: ShortcutIcon | None = None,
     client_release: str | None = None,
     client_version: str | None = None,
 ) -> dict[str, object]:
@@ -58,6 +77,14 @@ def build_workflow_payload(
         "WFWorkflowName": name,
         "WFWorkflowActions": build_workflow_actions(actions),
     }
+    if icon is not None:
+        color_value = ICON_COLOR_VALUES.get(icon.color)
+        if color_value is None:
+            raise ValueError(f"Unsupported icon color: {icon.color}")
+        payload["WFWorkflowIcon"] = {
+            "WFWorkflowIconGlyphNumber": icon.glyph_number,
+            "WFWorkflowIconStartColor": color_value,
+        }
     if input_types:
         payload["WFWorkflowInputContentItemClasses"] = list(input_types)
     if client_release:
@@ -73,6 +100,7 @@ def build_workflow_plist(
     name: str,
     actions: Iterable[ShortcutAction],
     input_types: list[str] | None = None,
+    icon: ShortcutIcon | None = None,
     client_release: str | None = None,
     client_version: str | None = None,
 ) -> bytes:
@@ -80,6 +108,7 @@ def build_workflow_plist(
         name,
         actions,
         input_types=input_types,
+        icon=icon,
         client_release=client_release,
         client_version=client_version,
     )

@@ -44,6 +44,29 @@ SearchIn = Literal["name", "actions", "both"]
 
 ActionSource = Literal["system", "apps", "library", "curated"]
 
+IconColor = Literal[
+    "red",
+    "dark_orange",
+    "orange",
+    "yellow",
+    "green",
+    "teal",
+    "light_blue",
+    "blue",
+    "dark_blue",
+    "violet",
+    "purple",
+    "dark_gray",
+    "pink",
+    "taupe",
+    "gray",
+]
+
+
+class ShortcutIcon(BaseModel):
+    glyph_number: int
+    color: IconColor
+
 
 class ActionParameter(BaseModel):
     name: str

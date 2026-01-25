@@ -1,5 +1,7 @@
+import plistlib
+
 from shortcuts_mcp.builder import build_workflow_plist
-from shortcuts_mcp.models import ShortcutAction
+from shortcuts_mcp.models import ShortcutAction, ShortcutIcon
 from shortcuts_mcp.parser import parse_actions
 
 
@@ -70,3 +72,26 @@ def test_build_workflow_plist_preserves_existing_uuid():
     parsed = parse_actions(payload)
 
     assert parsed[0].parameters["UUID"] == existing_uuid
+
+
+def test_build_workflow_plist_sets_icon() -> None:
+    actions = [
+        ShortcutAction(
+            identifier="is.workflow.actions.gettext",
+            parameters={"WFTextActionText": "Hello"},
+        )
+    ]
+
+    payload = build_workflow_plist(
+        "Sample",
+        actions,
+        icon=ShortcutIcon(glyph_number=42, color="blue"),
+        client_release="7.0",
+        client_version="4046.0.2.2",
+    )
+    plist = plistlib.loads(payload)
+
+    assert "WFWorkflowIcon" in plist
+    icon = plist["WFWorkflowIcon"]
+    assert icon["WFWorkflowIconGlyphNumber"] == 42
+    assert icon["WFWorkflowIconStartColor"] == 463140863
